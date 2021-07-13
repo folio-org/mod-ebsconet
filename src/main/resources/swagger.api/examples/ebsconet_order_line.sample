@@ -1,17 +1,21 @@
 {
-  "vendor": "AMAZ",
-  "cancellationRestriction": false,
-  "cancellationRestrictionNote": "Any note",
-  "unitPrice": 1,
+  "vendor": "SREBSCO",
+  "cancellationRestriction": true,
+  "cancellationRestrictionNote": "CANCELLATIONS NOT ACCEPTED DURING A SUBSCRIPTION PERIOD ONCE FULFILLMENT HAS BEGUN",
+  "unitPrice": 467.0,
   "currency": "USD",
-  "vendorReferenceNumber": "2019-184",
-  "poNumber": "268758",
-  "poLineNumber": "268758-03",
-  "subscriptionToDate": "2018-10-05T00:00:00.000Z",
-  "subscriptionFromDate": "2019-10-05T00:00:00.000Z",
+  "vendorReferenceNumbers": [
+    {
+      "refNumber": "123445",
+      "refNumberType": "Vendor continuation reference number"
+    }
+  ],
+  "poLineNumber": "10008-1",
+  "subscriptionToDate": "2021-01-01T00:00:00.000+00:00",
+  "subscriptionFromDate": "2021-01-01T00:00:00.000+00:00",
   "quantity": 1,
   "fundCode": "HIST",
-  "publisherName": "MIT Press",
-  "vendorAccountNumber": "1121112569489",
-  "workflowStatus": "Pending"
+  "publisherName": "BRILL",
+  "vendorAccountNumber": "BR6569501",
+  "workflowStatus": "Open"
 }

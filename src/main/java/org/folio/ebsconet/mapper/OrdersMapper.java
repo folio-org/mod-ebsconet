@@ -5,6 +5,7 @@ import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.Fund;
 import org.folio.ebsconet.domain.dto.FundDistribution;
+import org.folio.ebsconet.domain.dto.Location;
 import org.folio.ebsconet.domain.dto.Organization;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
@@ -19,6 +20,9 @@ import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toList;
 
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class OrdersMapper {
@@ -72,7 +76,7 @@ public abstract class OrdersMapper {
     poLine.setPublisher(ebsconetOrderLine.getPublisherName());
 
     populateCostAndLocations(poLine, ebsconetOrderLine);
-
+    removeZeroAmountLocations(poLine);
     if (fund != null) {
       poLine.getFundDistribution().get(0).setCode(fund.getCode());
       poLine.getFundDistribution().get(0).setFundId(fund.getId());
@@ -98,12 +102,18 @@ public abstract class OrdersMapper {
     poLine.getCost().setQuantityPhysical(ebsconetOrderLine.getQuantity());
     poLine.getCost().setListUnitPrice(ebsconetOrderLine.getUnitPrice());
 
+    clearLocationQuantities(poLine);
+
     poLine.getLocations().get(0).setQuantityPhysical(ebsconetOrderLine.getQuantity());
   }
+
+
 
   private void populateElectronicCostAndLocation(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     poLine.getCost().setQuantityElectronic(ebsconetOrderLine.getQuantity());
     poLine.getCost().setListUnitPriceElectronic(ebsconetOrderLine.getUnitPrice());
+
+    clearLocationQuantities(poLine);
 
     poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity());
   }
@@ -114,8 +124,13 @@ public abstract class OrdersMapper {
   }
 
   private void processPEMixQuantityUpdate(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+    // special case. 1 ebsconet item for PE mix = 1 physical + 1 electronic folio items
+    if (ebsconetOrderLine.getQuantity() == 1) {
+      redistributeSinglePeMixItem(poLine);
+    }
+
     // Q physical = 1 and electronic > 1
-    if (poLine.getCost().getQuantityPhysical() == 1 && poLine.getCost().getQuantityElectronic() > 1) {
+    else if (poLine.getCost().getQuantityPhysical() == 1 && poLine.getCost().getQuantityElectronic() > 1) {
       poLine.getCost().setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
       poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
       poLine.getCost().setQuantityPhysical(1);
@@ -143,6 +158,24 @@ public abstract class OrdersMapper {
     }
   }
 
+  private void redistributeSinglePeMixItem(CompositePoLine poLine) {
+    poLine.getCost().setQuantityElectronic(1);
+    poLine.getCost().setQuantityPhysical(1);
+
+    // set all location quantities to zero
+    clearLocationQuantities(poLine);
+
+    // redistribute quantities for single and multiple locations
+    if (poLine.getLocations().size() == 1) {
+      poLine.getLocations().get(0).setQuantityPhysical(1);
+      poLine.getLocations().get(0).setQuantityElectronic(1);
+    } else {
+      poLine.getLocations().get(0).setQuantityPhysical(1);
+      poLine.getLocations().get(1).setQuantityElectronic(1);
+    }
+
+  }
+
   private void processPEmixPriceUpdate(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     var fractionDigits = Currency.getInstance(ebsconetOrderLine.getCurrency()).getDefaultFractionDigits();
     var unitPrice = ebsconetOrderLine.getUnitPrice().setScale(fractionDigits, RoundingMode.HALF_EVEN);
@@ -166,5 +199,27 @@ public abstract class OrdersMapper {
       poLine.getCost().setListUnitPriceElectronic(newElectronicPrice);
       poLine.getCost().setListUnitPrice(newPhysicalPrice);
     }
+  }
+
+
+  private void removeZeroAmountLocations(CompositePoLine poLine) {
+    Predicate<Location> locationQuantityGreaterThanZero = location ->
+      location.getQuantityElectronic() != null && location.getQuantityElectronic() > 0
+        || location.getQuantityPhysical() != null && location.getQuantityPhysical() > 0;
+
+    var nonZeroLocations = poLine.getLocations()
+      .stream()
+      .filter(locationQuantityGreaterThanZero)
+      .collect(toList());
+
+    poLine.setLocations(nonZeroLocations);
+  }
+
+
+  private void clearLocationQuantities(CompositePoLine poLine) {
+    poLine.getLocations().forEach(location -> {
+      location.setQuantityPhysical(0);
+      location.setQuantityElectronic(0);
+    });
   }
 }

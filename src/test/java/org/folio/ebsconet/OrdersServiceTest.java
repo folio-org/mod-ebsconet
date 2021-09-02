@@ -26,7 +26,6 @@ import org.folio.ebsconet.domain.dto.VendorDetail;
 import org.folio.ebsconet.domain.dto.WorkflowStatus;
 import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.service.OrdersService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,15 +45,18 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -334,11 +336,11 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    Assertions.assertEquals(expectedEQuantity , updatedCompLine.getLocations().get(0).getQuantityElectronic());
-    Assertions.assertEquals(expectedPQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
+    assertEquals(expectedEQuantity , updatedCompLine.getLocations().get(0).getQuantityElectronic());
+    assertEquals(expectedPQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
 
-    Assertions.assertEquals(expectedEQuantity, updatedCompLine.getCost().getQuantityElectronic());
-    Assertions.assertEquals(expectedPQuantity, updatedCompLine.getCost().getQuantityPhysical());
+    assertEquals(expectedEQuantity, updatedCompLine.getCost().getQuantityElectronic());
+    assertEquals(expectedPQuantity, updatedCompLine.getCost().getQuantityPhysical());
 
   }
 
@@ -372,8 +374,240 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    Assertions.assertEquals(expectedEPrice.doubleValue(), updatedCompLine.getCost().getListUnitPriceElectronic().doubleValue(), 2);
-    Assertions.assertEquals(expectedPPrice.doubleValue(), updatedCompLine.getCost().getListUnitPrice().doubleValue(), 2);
+    assertEquals(expectedEPrice.doubleValue(), updatedCompLine.getCost().getListUnitPriceElectronic().doubleValue(), 2);
+    assertEquals(expectedPPrice.doubleValue(), updatedCompLine.getCost().getListUnitPrice().doubleValue(), 2);
+
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "1, 1, 1, 1, 1",
+    "2, 1, 1, 1, 1",
+  })
+  @DisplayName("Update line with multiple locations. P/E Mix")
+  void updateLineWithMultipleLocationsMix(int ebsconetQuantity,
+    int currentPQuantity, int currentEQuantity, int newLocation1Quantity, int newLocation2Quantity) {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+
+    List<Location> locations = new ArrayList<>();
+    locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
+    locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityElectronic(currentEQuantity));
+    compositePoLine.setLocations(locations);
+
+    compositePoLine.setOrderFormat(OrderFormat.P_E_MIX);
+
+    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
+    compositePoLine.getCost().setQuantityElectronic(currentEQuantity);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
+    var updatedCompLine = argumentCaptor.getValue();
+
+    assertEquals(newLocation1Quantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
+    assertEquals(newLocation2Quantity, updatedCompLine.getLocations().get(1).getQuantityElectronic());
+
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "1, 1, 1, 0",
+    "2, 1, 2, 0",
+    // see https://issues.folio.org/browse/MODEBSNET-18
+  })
+  @DisplayName("Update line with multiple locations. Physical")
+  void updateLineWithMultipleLocationsPhysical(int ebsconetQuantity, int currentPQuantity, int newLocationQuantity) {
+
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+
+    List<Location> locations = new ArrayList<>();
+    locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
+    locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
+    compositePoLine.setLocations(locations);
+
+    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+
+    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
+    compositePoLine.getCost().setQuantityElectronic(0);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
+    var updatedCompLine = argumentCaptor.getValue();
+
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
+    assertEquals(1, updatedCompLine.getLocations().size());
+
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "1, 1, 1, 0",
+    "2, 1, 2, 0",
+    // see https://issues.folio.org/browse/MODEBSNET-18
+  })
+  @DisplayName("Update line with multiple locations. Electronic")
+  void updateLineWithMultipleLocationsElectronic(int ebsconetQuantity, int currentPQuantity, int newLocationQuantity) {
+
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+
+    List<Location> locations = new ArrayList<>();
+    locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
+    locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
+    compositePoLine.setLocations(locations);
+
+    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+
+    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
+    compositePoLine.getCost().setQuantityElectronic(0);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
+    var updatedCompLine = argumentCaptor.getValue();
+
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
+    assertEquals(1, updatedCompLine.getLocations().size());
+  }
+
+
+  @ParameterizedTest
+  @CsvSource({
+    "1, 1, 1",
+    "2, 1, 2"
+    // see https://issues.folio.org/browse/MODEBSNET-18
+  })
+  @DisplayName("Update line with single location. Physical")
+  void updateLineWithSingleLocationPhysical(int ebsconetQuantity, int currentPQuantity, int newLocationQuantity) {
+
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+
+    List<Location> locations = new ArrayList<>();
+    var location = new Location()
+      .locationId(UUID.randomUUID().toString())
+      .quantityPhysical(currentPQuantity)
+      .quantityElectronic(0);
+
+    locations.add(location);
+    compositePoLine.setLocations(locations);
+
+    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+
+    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
+    compositePoLine.getCost().setQuantityElectronic(0);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
+    var updatedCompLine = argumentCaptor.getValue();
+
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
+    assertEquals(0, updatedCompLine.getLocations().get(0).getQuantityElectronic());
+
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "1, 1, 1",
+    "2, 1, 2",
+    // see https://issues.folio.org/browse/MODEBSNET-18
+  })
+  @DisplayName("Update line with single location. Electronic")
+  void updateLineWithSingleLocationElectronic(int ebsconetQuantity, int currentEQuantity, int newLocationQuantity) {
+
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+
+    List<Location> locations = new ArrayList<>();
+    var location = new Location()
+      .locationId(UUID.randomUUID().toString())
+      .quantityPhysical(0)
+      .quantityElectronic(currentEQuantity);
+
+    locations.add(location);
+    compositePoLine.setLocations(locations);
+
+    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+
+    compositePoLine.getCost().setQuantityPhysical(0);
+    compositePoLine.getCost().setQuantityElectronic(currentEQuantity);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
+    var updatedCompLine = argumentCaptor.getValue();
+
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
+    assertEquals(0, updatedCompLine.getLocations().get(0).getQuantityPhysical());
 
   }
 

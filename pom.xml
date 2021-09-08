@@ -24,7 +24,7 @@
   <properties>
     <java.version>11</java.version>
     <folio-spring-base.version>1.0.5</folio-spring-base.version>
-    <json.version>20200518</json.version>
+    <json.version>20210307</json.version>
     <log4jweb.version>2.6.2</log4jweb.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <openapi-generator.version>5.1.1</openapi-generator.version>

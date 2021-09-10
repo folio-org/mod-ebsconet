@@ -84,6 +84,7 @@ public class OrdersService {
 
     // Convert ebsconet dto to poLine
     ordersMapper.ebsconetToFolio(compositePoLine, updateOrderLine, fund);
+    log.info("compositePoLine: {}", compositePoLine);
 
     ordersClient.putOrderLine(poLine.getId(), compositePoLine);
   }

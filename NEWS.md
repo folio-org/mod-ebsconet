@@ -1,7 +1,15 @@
 ## 1.1.0 Unreleased
 
+## 1.0.2 Released
+The primary focus of this release to fix handling of PO lines with multiple locations
+[Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v1.0.1...v1.0.2)
+
+### Stories
+* [MODEBSNET-18](https://issues.folio.org/browse/MODEBSNET-18) Allow EBSCONET to update order with multiple locations
+
 ## 1.0.1 Released
 The primary focus of this release to add functionality of handling mixed orders for ebsconet
+[Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v1.0.0...v1.0.1)
 
 ### Stories
 * [MODEBSNET-10](https://issues.folio.org/browse/MODEBSNET-10) Handling mixed orders for ebsconet

@@ -1,4 +1,19 @@
-## 1.0.0 Released
+## 1.2.0 - Unreleased
+
+## 1.1.0 - Released
+The primary focus of this release to update core dependencies
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.0.0...v1.1.0)
+
+### Stories
+* [MODEBSNET-20](https://issues.folio.org/browse/MODEBSNET-20) folio-spring-base v2 update
+
+### Bug Fixes
+* [MODEBSNET-18](https://issues.folio.org/browse/MODEBSNET-18) Allow EBSCONET to update order with multiple locations
+* [MODEBSNET-10](https://issues.folio.org/browse/MODEBSNET-10) Handling mixed orders for ebsconet
+
+ 
+## 1.0.0 - Released
 The primary focus of this release to create module and implement basic logic interact with mod-orders 
 
 ### Stories

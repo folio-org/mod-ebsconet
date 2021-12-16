@@ -1,5 +1,13 @@
 ## 1.2.0 - Unreleased
 
+## 1.1.1 - Released
+This bugfix release focused on fixing Log4j vulnerability
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.1.0...v1.1.1)
+
+### Bugfixes
+* [MODEBSNET-23](https://issues.folio.org/browse/MODEBSNET-23) Kiwi R3 2021 - Log4j vulnerability verification and correction
+
 ## 1.1.0 - Released
 The primary focus of this release to update core dependencies
 

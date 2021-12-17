@@ -1,5 +1,13 @@
 ## 1.1.0 Unreleased
 
+## 1.0.3 Released
+The focus of this release was to fix Log4j vulnerability
+
+[Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v1.0.2...v1.0.3)
+
+### Bug Fixes
+* [MODEBSNET-24](https://issues.folio.org/browse/MODEBSNET-24) Juniper R2 2021 - Log4j vulnerability verification and correction
+
 ## 1.0.2 Released
 The primary focus of this release to fix handling of PO lines with multiple locations
 [Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v1.0.1...v1.0.2)

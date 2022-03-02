@@ -1,4 +1,15 @@
-## 1.2.0 - Unreleased
+## 1.3.0 - Unreleased
+
+## 1.2.0 - Released
+This release contains schema updates in order to support mod-orders interfaces
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.1.0...v1.2.0)
+
+### Stories
+* [MODORDSTOR-267](https://issues.folio.org/browse/MODORDSTOR-267) Rename collection field name for Acquisition method collection
+* [MODORDSTOR-266](https://issues.folio.org/browse/MODORDSTOR-266) added automaticExport to poline schemes
+* [MODORDSTOR-256](https://issues.folio.org/browse/MODORDSTOR-256) Major API versions have been increased
+
 
 ## 1.1.0 - Released
 The primary focus of this release to update core dependencies

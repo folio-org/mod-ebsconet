@@ -3,13 +3,13 @@ package org.folio.ebsconet.mapper;
 import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
-import org.folio.ebsconet.domain.dto.Fund;
 import org.folio.ebsconet.domain.dto.FundDistribution;
 import org.folio.ebsconet.domain.dto.Location;
 import org.folio.ebsconet.domain.dto.Organization;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
 import org.folio.ebsconet.domain.dto.Source;
+import org.folio.ebsconet.models.MappingDataHolder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -64,7 +64,11 @@ public abstract class OrdersMapper {
     return physical.add(electronic);
   }
 
-  public void ebsconetToFolio(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine, Fund fund) {
+  public void ebsconetToFolio(MappingDataHolder mappingDataHolder) {
+    var poLine = mappingDataHolder.getCompositePoLine();
+    var ebsconetOrderLine = mappingDataHolder.getEbsconetOrderLine();
+    var fund = mappingDataHolder.getFund();
+
     poLine.setSource(Source.EBSCONET);
     poLine.setCancellationRestriction(ebsconetOrderLine.getCancellationRestriction());
     poLine.setCancellationRestrictionNote(ebsconetOrderLine.getCancellationRestrictionNote());

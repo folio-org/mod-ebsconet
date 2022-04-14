@@ -3,6 +3,7 @@ package org.folio.ebsconet.mapper;
 import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
+import org.folio.ebsconet.domain.dto.ExpenseClass;
 import org.folio.ebsconet.domain.dto.FundDistribution;
 import org.folio.ebsconet.domain.dto.Location;
 import org.folio.ebsconet.domain.dto.Organization;

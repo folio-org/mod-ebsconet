@@ -110,7 +110,7 @@ class OrdersServiceTest {
   void testGetEbsconetOrderLine() throws IOException, URISyntaxException {
     String poLineNumber = "268758-03";
     PoLine pol = preparePoLine(poLineNumber);
-
+    pol.getFundDistribution().get(0).setExpenseClassId(UUID.randomUUID().toString());
     var polResult = new PoLineCollection();
     polResult.addPoLinesItem(pol);
     polResult.setTotalRecords(1);
@@ -121,9 +121,12 @@ class OrdersServiceTest {
     String poId = "d79b0bcc-DcAD-1E4E-Abb7-DbFcaD5BB3bb";
     PurchaseOrder po = preparePurchaseOrder(poId, vendorId);
 
+    ExpenseClass expClass = new ExpenseClass().id(UUID.randomUUID().toString()).code("Prnt");
+
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
     when(ordersClient.getOrderById(poId)).thenReturn(po);
     when(organizationClient.getOrganizationById(vendorId)).thenReturn(vendorOrg);
+    when(financeClient.getExpenseClassesById(anyString())).thenReturn(expClass);
 
     EbsconetOrderLine ebsconetOL = ordersService.getEbscoNetOrderLine(poLineNumber);
 
@@ -131,7 +134,7 @@ class OrdersServiceTest {
     verify(ordersClient, times(1)).getOrderById(isA(String.class));
     verify(organizationClient, times(1)).getOrganizationById(isA(String.class));
 
-    assertThat(ebsconetOL.getFundCode(), is("HIST"));
+    assertThat(ebsconetOL.getFundCode(), is("HIST:Prnt"));
     assertThat(ebsconetOL.getSubscriptionFromDate(), is(JsonNullable.undefined()));
     // NOTE: a more complete value check is done with the controller test
   }

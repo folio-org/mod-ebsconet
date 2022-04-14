@@ -8,6 +8,7 @@ import org.folio.ebsconet.client.FinanceClient;
 import org.folio.ebsconet.client.OrdersClient;
 import org.folio.ebsconet.client.OrganizationClient;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
+import org.folio.ebsconet.domain.dto.ExpenseClass;
 import org.folio.ebsconet.domain.dto.FundCollection;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PoLineCollection;
@@ -47,6 +48,14 @@ public class OrdersService {
     String vendorId = order.getVendor();
     var vendor = organizationClient.getOrganizationById(vendorId);
     log.debug("Vendor organization received for getEbsconetOrderLine poLineNumber={}", poLineNumber);
+
+    String expenseClassCode = "";
+    if (line.getFundDistribution() != null && !line.getFundDistribution().isEmpty() && line.getFundDistribution().get(0).getExpenseClassId() != null) {
+      expenseClassCode = ":" + financeClient.getExpenseClassesById(line.getFundDistribution().get(0).getExpenseClassId()).getCode();
+      line.getFundDistribution().get(0).setCode(line.getFundDistribution().get(0).getCode() + expenseClassCode);
+    }
+    log.debug("Expense class received for getEbsconetOrderLine poLineNumber={}", poLineNumber);
+
     EbsconetOrderLine eol = ordersMapper.folioToEbsconet(order, line, vendor);
     log.info("success for getEbsconetOrderLine: {}", eol);
     return eol;

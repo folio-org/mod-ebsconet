@@ -8,7 +8,6 @@ import org.folio.ebsconet.client.FinanceClient;
 import org.folio.ebsconet.client.OrdersClient;
 import org.folio.ebsconet.client.OrganizationClient;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
-import org.folio.ebsconet.domain.dto.ExpenseClass;
 import org.folio.ebsconet.domain.dto.FundCollection;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PoLineCollection;

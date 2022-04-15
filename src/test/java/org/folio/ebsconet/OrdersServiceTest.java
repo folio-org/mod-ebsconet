@@ -13,6 +13,8 @@ import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.Details;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
+import org.folio.ebsconet.domain.dto.ExpenseClass;
+import org.folio.ebsconet.domain.dto.ExpenseClassCollection;
 import org.folio.ebsconet.domain.dto.Fund;
 import org.folio.ebsconet.domain.dto.FundCollection;
 import org.folio.ebsconet.domain.dto.FundDistribution;
@@ -108,7 +110,7 @@ class OrdersServiceTest {
   void testGetEbsconetOrderLine() throws IOException, URISyntaxException {
     String poLineNumber = "268758-03";
     PoLine pol = preparePoLine(poLineNumber);
-
+    pol.getFundDistribution().get(0).setExpenseClassId(UUID.randomUUID().toString());
     var polResult = new PoLineCollection();
     polResult.addPoLinesItem(pol);
     polResult.setTotalRecords(1);
@@ -119,9 +121,12 @@ class OrdersServiceTest {
     String poId = "d79b0bcc-DcAD-1E4E-Abb7-DbFcaD5BB3bb";
     PurchaseOrder po = preparePurchaseOrder(poId, vendorId);
 
+    ExpenseClass expClass = new ExpenseClass().id(UUID.randomUUID().toString()).code("Prnt");
+
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
     when(ordersClient.getOrderById(poId)).thenReturn(po);
     when(organizationClient.getOrganizationById(vendorId)).thenReturn(vendorOrg);
+    when(financeClient.getExpenseClassesById(anyString())).thenReturn(expClass);
 
     EbsconetOrderLine ebsconetOL = ordersService.getEbscoNetOrderLine(poLineNumber);
 
@@ -129,7 +134,7 @@ class OrdersServiceTest {
     verify(ordersClient, times(1)).getOrderById(isA(String.class));
     verify(organizationClient, times(1)).getOrganizationById(isA(String.class));
 
-    assertThat(ebsconetOL.getFundCode(), is("HIST"));
+    assertThat(ebsconetOL.getFundCode(), is("HIST:Prnt"));
     assertThat(ebsconetOL.getSubscriptionFromDate(), is(JsonNullable.undefined()));
     // NOTE: a more complete value check is done with the controller test
   }
@@ -185,6 +190,7 @@ class OrdersServiceTest {
     var compositePoLine = new CompositePoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
+    compositePoLine.setId(poLine.getId());
     compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
     compositePoLine.setCost(new Cost());
     compositePoLine.setVendorDetail(new VendorDetail());
@@ -217,6 +223,7 @@ class OrdersServiceTest {
     var compositePoLine = new CompositePoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
+    compositePoLine.setId(poLine.getId());
     compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
     compositePoLine.setCost(new Cost());
     compositePoLine.setVendorDetail(new VendorDetail());
@@ -242,13 +249,14 @@ class OrdersServiceTest {
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
     var poLine = new PoLine();
-    poLine.setId("id");
+    poLine.setId(UUID.randomUUID().toString());
     polResult.addPoLinesItem(poLine);
     polResult.setTotalRecords(1);
 
     var compositePoLine = new CompositePoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
+    compositePoLine.setId(poLine.getId());
     compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
     compositePoLine.setCost(new Cost());
     compositePoLine.setVendorDetail(new VendorDetail());
@@ -265,7 +273,7 @@ class OrdersServiceTest {
     funds.setTotalRecords(1);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById(poLine.getId())).thenReturn(compositePoLine);
     when(financeClient.getFundsByQuery(any())).thenReturn(funds);
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
@@ -609,6 +617,57 @@ class OrdersServiceTest {
     assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
     assertEquals(0, updatedCompLine.getLocations().get(0).getQuantityPhysical());
 
+  }
+
+
+  @Test
+  void mapFundWithExpenseClass() {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE:Prnt", 1);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    var compositePoLine = new CompositePoLine();
+    var fundDistribution = new FundDistribution();
+    fundDistribution.setCode("CODE");
+    compositePoLine.setId(poLine.getId());
+    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
+    compositePoLine.setCost(new Cost());
+    compositePoLine.setVendorDetail(new VendorDetail());
+    compositePoLine.setDetails(new Details());
+    compositePoLine.setLocations(Collections.singletonList(new Location()));
+    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+
+    var funds = new FundCollection();
+    var fund = new Fund();
+    fund.setCode("DIFFERENT_CODE");
+    fund.setId("id");
+    funds.setFunds(Collections.singletonList(fund));
+    funds.setTotalRecords(1);
+
+    var expenseClassCollection = new ExpenseClassCollection();
+    var expenseClass = new ExpenseClass();
+    expenseClass.setCode("Prnt");
+    expenseClass.setId("id");
+    expenseClassCollection.setExpenseClasses(Collections.singletonList(expenseClass));
+    expenseClassCollection.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(financeClient.getFundsByQuery(any())).thenReturn(funds);
+    when(financeClient.getExpenseClassesByQuery(anyString())).thenReturn(expenseClassCollection);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
+    verify(ordersClient, times(1)).getOrderLineById(anyString());
+    verify(ordersClient, times(1)).putOrderLine(anyString(),any());
+    verify(financeClient, times(1)).getExpenseClassesByQuery(anyString());
   }
 
   private static Stream<Arguments> getPriceParameters() {

@@ -48,6 +48,8 @@
           ],
           "modulePermissions": [
             "finance.funds.collection.get",
+            "finance.expense-classes.collection.get",
+            "finance.expense-classes.item.get",
             "orders.po-lines.collection.get",
             "orders.po-lines.item.get",
             "orders.po-lines.item.put"

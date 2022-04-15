@@ -114,6 +114,8 @@ components:
       $ref: schemas/mod-orders/po_line.json
     poLineCollection:
       $ref: schemas/mod-orders/po_line_collection.json
+    expenseClassCollection:
+      $ref: schemas/mod-finance/expense_class_collection.json
     fundCollection:
       $ref: schemas/mod-finance/fund_collection.json
     purchaseOrder:

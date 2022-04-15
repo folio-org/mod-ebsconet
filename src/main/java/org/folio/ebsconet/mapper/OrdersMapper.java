@@ -85,6 +85,7 @@ public abstract class OrdersMapper {
     if (fund != null) {
       poLine.getFundDistribution().get(0).setCode(fund.getCode());
       poLine.getFundDistribution().get(0).setFundId(fund.getId());
+      poLine.getFundDistribution().get(0).setExpenseClassId(mappingDataHolder.getExpenseClass());
     }
   }
 

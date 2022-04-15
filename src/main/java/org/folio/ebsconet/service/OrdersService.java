@@ -64,8 +64,8 @@ public class OrdersService {
     MappingDataHolder mappingDataHolder = new MappingDataHolder();
     mappingDataHolder.setEbsconetOrderLine(updateOrderLine);
 
-    retrievePoLineData(updateOrderLine, mappingDataHolder);
-    retrieveFinanceData(updateOrderLine, mappingDataHolder);
+    updateHolderWithPoLineData(updateOrderLine, mappingDataHolder);
+    updateHolderWithFinanceData(updateOrderLine, mappingDataHolder);
 
     // Convert ebsconet dto to poLine
     ordersMapper.ebsconetToFolio(mappingDataHolder);
@@ -74,7 +74,7 @@ public class OrdersService {
     ordersClient.putOrderLine(mappingDataHolder.getCompositePoLine().getId(), mappingDataHolder.getCompositePoLine());
   }
 
-  private void retrieveFinanceData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
+  private void updateHolderWithFinanceData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
     // Retrieve fund for update if needed
     if (!mappingDataHolder.getCompositePoLine().getFundDistribution().isEmpty()
         && !mappingDataHolder.getCompositePoLine().getFundDistribution().get(0).getCode().equals(updateOrderLine.getFundCode())) {
@@ -98,7 +98,7 @@ public class OrdersService {
     }
   }
 
-  private void retrievePoLineData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
+  private void updateHolderWithPoLineData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
     PoLineCollection poLines;
     try {
       poLines = ordersClient.getOrderLinesByQuery("poLineNumber==" + updateOrderLine.getPoLineNumber());

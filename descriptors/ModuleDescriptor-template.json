@@ -39,11 +39,7 @@
           "modulePermissions": [
             "orders.item.get",
             "orders.po-lines.collection.get",
-            "organizations.organizations.item.get",
-            "notes.item.post",
-            "notes.collection.get.by.status",
-            "note.types.collection.get",
-            "notes.domain.all"
+            "organizations.organizations.item.get"
           ]
         },
         {
@@ -61,11 +57,10 @@
             "orders.po-lines.collection.get",
             "orders.po-lines.item.get",
             "orders.po-lines.item.put",
-            "notes.domain.all",
-            "notes.item.put",
-            "notes.item.delete",
-            "notes.collection.get",
-            "notes.item.post"
+            "notes.item.post",
+            "notes.collection.get.by.status",
+            "note.types.collection.get",
+            "notes.domain.all"
           ]
         },
         {

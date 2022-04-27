@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A fund to track financial transactions",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "UUID of this fund",
+      "$ref": "../common/schemas/uuid.json"
+    },
+    "typeId": {
+      "description": "UUID of this fund",
+      "$ref": "../common/schemas/uuid.json"
+    },
+    "type": {
+      "description": "A unique code associated with the fund",
+      "type": "string"
+    },
+    "title": {
+      "description": "A unique code associated with the fund",
+      "type": "string"
+    },
+    "domain": {
+      "description": "A unique code associated with the fund",
+      "type": "string"
+    },
+    "content": {
+      "description": "A unique code associated with the fund",
+      "type": "string"
+    },
+    "popUpOnCheckOut": {
+      "description": "A unique code associated with the fund",
+      "type": "string"
+    },
+    "popUpOnUser": {
+      "description": "A unique code associated with the fund",
+      "type": "string"
+    },
+    "links": {
+      "description": "All the funds that this fund is allowed to receive money from. This would be 1 fund or none. If this field is blank their is no restriction on allocating to this fund",
+      "type": "array",
+      "items": {
+        "description": "UUID of the fund this fund is allowed to receive money from",
+        "$ref": "link.json"
+      }
+    },
+    "metadata": {
+      "description": "Metadata about creation and changes to record, provided by the server (client should not provide)",
+      "type": "object",
+      "$ref": "../common/metadata.json",
+      "readonly": true
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "fundStatus",
+    "ledgerId",
+    "name"
+  ]
+}

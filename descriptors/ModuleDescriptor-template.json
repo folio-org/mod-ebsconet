@@ -17,6 +17,10 @@
     {
       "id": "finance.funds",
       "version": "1.4"
+    },
+    {
+      "id": "notes",
+      "version": "2.0"
     }
   ],
   "provides": [
@@ -35,7 +39,9 @@
           "modulePermissions": [
             "orders.item.get",
             "orders.po-lines.collection.get",
-            "organizations.organizations.item.get"
+            "organizations.organizations.item.get",
+            "notes.collection.get",
+            "notes.domain.all"
           ]
         },
         {
@@ -52,7 +58,12 @@
             "finance.expense-classes.item.get",
             "orders.po-lines.collection.get",
             "orders.po-lines.item.get",
-            "orders.po-lines.item.put"
+            "orders.po-lines.item.put",
+            "notes.domain.all",
+            "notes.item.put",
+            "notes.item.delete",
+            "notes.collection.get",
+            "notes.item.post"
           ]
         },
         {

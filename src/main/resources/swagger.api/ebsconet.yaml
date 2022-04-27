@@ -124,6 +124,10 @@ components:
       $ref: schemas/mod-orders/validation_response.json
     compositePoLine:
       $ref: schemas/mod-orders/composite_po_line.json
+    note:
+      $ref: schemas/mod-notes/note.json
+    noteCollection:
+        $ref: schemas/mod-notes/note_collection.json
     error:
       $ref: schemas/common/error.json#/Error
     errors:

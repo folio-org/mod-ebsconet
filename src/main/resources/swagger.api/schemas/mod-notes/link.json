@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Link",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "UUID of this fund",
+      "$ref": "../common/schemas/uuid.json"
+    },
+    "type": {
+      "description": "UUID of this fund",
+      "$ref": "../common/schemas/uuid.json"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type"
+  ]
+}

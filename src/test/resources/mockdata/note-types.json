@@ -1,0 +1,15 @@
+{
+  "noteTypes": [
+    {
+      "id": "7fc09d6d-6fb4-45ec-a70e-c0f7e3a9b112",
+      "name": "General note",
+      "usage": {
+        "noteTotal": 1
+      },
+      "metadata": {
+        "createdDate": "2022-04-24T04:53:58.830714Z"
+      }
+    }
+  ],
+  "totalRecords": 1
+}

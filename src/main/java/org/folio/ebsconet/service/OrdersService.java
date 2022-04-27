@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class OrdersService {
   private final OrdersClient ordersClient;
   private final FinanceClient financeClient;
+  private final NotesService notesService;
   private final OrdersMapper ordersMapper = Mappers.getMapper(OrdersMapper.class);
   private final OrganizationClient organizationClient;
   private static final String PO_LINE_NOT_FOUND_MESSAGE = "PO Line not found: ";
@@ -70,8 +71,10 @@ public class OrdersService {
     // Convert ebsconet dto to poLine
     ordersMapper.ebsconetToFolio(mappingDataHolder);
     log.info("compositePoLine: {}", mappingDataHolder.getCompositePoLine());
+    notesService.linkCustomerNote(mappingDataHolder);
 
     ordersClient.putOrderLine(mappingDataHolder.getCompositePoLine().getId(), mappingDataHolder.getCompositePoLine());
+    // create or update customer note after poLine update
   }
 
   private void updateHolderWithFinanceData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {

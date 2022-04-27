@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class NotesServiceTest {
+public class NotesServiceTest {
   @Mock
   private NoteTypeClient noteTypeClient;
   @Mock

@@ -16,12 +16,15 @@ import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.mapper.OrdersMapper;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class OrdersService {
+
+  private final NotesService notesService;
   private final OrdersClient ordersClient;
   private final FinanceClient financeClient;
   private final OrdersMapper ordersMapper = Mappers.getMapper(OrdersMapper.class);
@@ -72,6 +75,8 @@ public class OrdersService {
     log.info("compositePoLine: {}", mappingDataHolder.getCompositePoLine());
 
     ordersClient.putOrderLine(mappingDataHolder.getCompositePoLine().getId(), mappingDataHolder.getCompositePoLine());
+    notesService.linkCustomerNote(mappingDataHolder);
+    // create or update customer note after poLine update
   }
 
   private void updateHolderWithFinanceData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {

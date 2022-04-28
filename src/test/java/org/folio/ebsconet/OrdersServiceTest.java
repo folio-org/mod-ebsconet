@@ -27,6 +27,7 @@ import org.folio.ebsconet.domain.dto.PurchaseOrder;
 import org.folio.ebsconet.domain.dto.VendorDetail;
 import org.folio.ebsconet.domain.dto.WorkflowStatus;
 import org.folio.ebsconet.error.ResourceNotFoundException;
+import org.folio.ebsconet.service.NotesService;
 import org.folio.ebsconet.service.OrdersService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,8 @@ class OrdersServiceTest {
   private FinanceClient financeClient;
   @Mock
   private OrganizationClient organizationClient;
+  @Mock
+  private NotesService notesService;
   @InjectMocks
   private OrdersService ordersService;
 

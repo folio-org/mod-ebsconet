@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A collection of notes",
+  "type": "object",
+  "properties": {
+    "notes": {
+      "description": "The list of notes contained in this collection",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "note.json"
+      }
+    },
+    "totalRecords": {
+      "description": "The number of objects contained in this collection",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "notes",
+    "totalRecords"
+  ]
+}

@@ -17,6 +17,10 @@
     {
       "id": "finance.funds",
       "version": "1.4"
+    },
+    {
+      "id": "notes",
+      "version": "2.0"
     }
   ],
   "provides": [
@@ -52,7 +56,11 @@
             "finance.expense-classes.item.get",
             "orders.po-lines.collection.get",
             "orders.po-lines.item.get",
-            "orders.po-lines.item.put"
+            "orders.po-lines.item.put",
+            "notes.item.post",
+            "notes.collection.get.by.status",
+            "note.types.collection.get",
+            "notes.domain.all"
           ]
         },
         {

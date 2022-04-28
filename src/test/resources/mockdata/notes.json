@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "id": "5b98a0e4-ebea-455c-bfb2-d1f86151d632",
+      "typeId": "7fc09d6d-6fb4-45ec-a70e-c0f7e3a9b112",
+      "type": "General note",
+      "title": "EBSCONET Customer Note",
+      "domain": "orders",
+      "popUpOnCheckOut": false,
+      "popUpOnUser": false,
+      "links": [
+        {
+          "id": "124cbc4b-5aba-461a-9ad6-30e8fc195a2b",
+          "type": "poLine"
+        }
+      ],
+      "metadata": {
+        "createdDate": "2022-04-27T14:45:29.171867Z",
+        "createdByUserId": "1aaea2b6-4789-59d7-a720-d27b6c7a7fc0",
+        "updatedDate": "2022-04-27T14:45:29.403954Z",
+        "updatedByUserId": "1aaea2b6-4789-59d7-a720-d27b6c7a7fc0"
+      }
+    }
+  ],
+  "totalRecords": 1
+}

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class OrdersService {
-  @Autowired
+
   private final NotesService notesService;
   private final OrdersClient ordersClient;
   private final FinanceClient financeClient;

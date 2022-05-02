@@ -19,6 +19,7 @@ import org.folio.ebsconet.domain.dto.Fund;
 import org.folio.ebsconet.domain.dto.FundCollection;
 import org.folio.ebsconet.domain.dto.FundDistribution;
 import org.folio.ebsconet.domain.dto.Location;
+import org.folio.ebsconet.domain.dto.Note;
 import org.folio.ebsconet.domain.dto.OrderFormat;
 import org.folio.ebsconet.domain.dto.Organization;
 import org.folio.ebsconet.domain.dto.PoLine;
@@ -60,6 +61,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -204,18 +206,24 @@ class OrdersServiceTest {
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
 
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
     verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
     verify(ordersClient, times(1)).getOrderLineById(anyString());
     verify(ordersClient, times(1)).putOrderLine(anyString(),any());
-    verify(financeClient, never()).getFundsByQuery(any());
   }
 
   @Test
   void shouldCallPutIfCallUpdateEbsconetOrderLine(){
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
 
+    var testRenewalNote = "Test renewal Note";
+    ebsconetOrderLine.renewalNote(testRenewalNote);
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
     var poLine = new PoLine();
@@ -237,12 +245,22 @@ class OrdersServiceTest {
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
 
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
+
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
     verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
     verify(ordersClient, times(1)).getOrderLineById(anyString());
     verify(ordersClient, times(1)).putOrderLine(anyString(),any());
-    verify(financeClient, never()).getFundsByQuery(any());
+
+    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    verify(ordersClient).putOrderLine(anyString(), argumentCaptor.capture());
+    CompositePoLine updatedLine = argumentCaptor.getValue();
+    assertEquals(testRenewalNote, updatedLine.getRenewalNote());
+
   }
 
   @Test
@@ -341,6 +359,11 @@ class OrdersServiceTest {
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
 
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
+
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
     ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
@@ -378,6 +401,10 @@ class OrdersServiceTest {
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
@@ -423,6 +450,10 @@ class OrdersServiceTest {
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
 
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
     ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
@@ -467,6 +498,10 @@ class OrdersServiceTest {
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
@@ -512,6 +547,11 @@ class OrdersServiceTest {
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
@@ -562,6 +602,11 @@ class OrdersServiceTest {
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
 
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
+
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
     ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
@@ -610,6 +655,10 @@ class OrdersServiceTest {
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 

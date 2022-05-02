@@ -3,7 +3,6 @@ package org.folio.ebsconet.mapper;
 import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
-import org.folio.ebsconet.domain.dto.ExpenseClass;
 import org.folio.ebsconet.domain.dto.FundDistribution;
 import org.folio.ebsconet.domain.dto.Location;
 import org.folio.ebsconet.domain.dto.Organization;
@@ -18,6 +17,7 @@ import org.mapstruct.NullValueCheckStrategy;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
@@ -87,9 +87,14 @@ public abstract class OrdersMapper {
     populateCostAndLocations(poLine, ebsconetOrderLine);
     removeZeroAmountLocations(poLine);
     if (fund != null) {
-      poLine.getFundDistribution().get(0).setCode(fund.getCode());
-      poLine.getFundDistribution().get(0).setFundId(fund.getId());
-      poLine.getFundDistribution().get(0).setExpenseClassId(mappingDataHolder.getExpenseClass());
+      var fundDistribution = new FundDistribution()
+        .fundId(fund.getId())
+        .code(fund.getCode())
+        .expenseClassId(mappingDataHolder.getExpenseClass())
+        .distributionType(FundDistribution.DistributionTypeEnum.AMOUNT)
+        .value(ebsconetOrderLine.getUnitPrice().multiply(BigDecimal.valueOf(ebsconetOrderLine.getQuantity())));
+
+      poLine.fundDistribution(Collections.singletonList(fundDistribution));
     }
   }
 
@@ -204,7 +209,7 @@ public abstract class OrdersMapper {
       // divide unit price
 
       BigDecimal newElectronicPrice = unitPrice.divide(BigDecimal.valueOf(2), fractionDigits, RoundingMode.HALF_EVEN).setScale(fractionDigits, RoundingMode.HALF_EVEN);
-      BigDecimal newPhysicalPrice = unitPrice.subtract(newElectronicPrice).setScale(fractionDigits, RoundingMode.HALF_EVEN);;
+      BigDecimal newPhysicalPrice = unitPrice.subtract(newElectronicPrice).setScale(fractionDigits, RoundingMode.HALF_EVEN);
 
       poLine.getCost().setListUnitPriceElectronic(newElectronicPrice);
       poLine.getCost().setListUnitPrice(newPhysicalPrice);

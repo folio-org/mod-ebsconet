@@ -81,9 +81,7 @@ public class OrdersService {
 
   private void updateHolderWithFinanceData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
     // Retrieve fund for update if needed
-    if (!mappingDataHolder.getCompositePoLine().getFundDistribution().isEmpty()
-        && !mappingDataHolder.getCompositePoLine().getFundDistribution().get(0).getCode().equals(updateOrderLine.getFundCode())) {
-
+    if (!StringUtils.isEmpty(mappingDataHolder.getEbsconetOrderLine().getFundCode())) {
       FundCollection funds = financeClient.getFundsByQuery("code==" + extractFundCode(updateOrderLine.getFundCode()));
 
       if (funds.getTotalRecords() < 1) {

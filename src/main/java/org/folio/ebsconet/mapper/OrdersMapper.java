@@ -72,7 +72,6 @@ public abstract class OrdersMapper {
     var ebsconetOrderLine = mappingDataHolder.getEbsconetOrderLine();
     var fund = mappingDataHolder.getFund();
 
-    poLine.setDescription(EBSCONET_CUSTOMER_NOTE);
     poLine.setSource(Source.EBSCONET);
     poLine.setCancellationRestriction(ebsconetOrderLine.getCancellationRestriction());
     poLine.setCancellationRestrictionNote(ebsconetOrderLine.getCancellationRestrictionNote());

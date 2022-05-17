@@ -15,8 +15,12 @@
       "version": "1.1"
     },
     {
+      "id": "finance.expense-classes",
+      "version": "3.0"
+    },
+    {
       "id": "finance.funds",
-      "version": "1.4"
+      "version": "2.0"
     },
     {
       "id": "notes",

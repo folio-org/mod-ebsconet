@@ -85,6 +85,15 @@
       "$ref": "../mod-orders/workflow_status.json",
       "description": "the workflow status for the purchase order",
       "readOnly": true
+    },
+    "type": {
+      "type": "string",
+      "description": "Set to non-renewal to cancel the purchase order line",
+      "readOnly": true,
+      "enum": [
+        "non-renewal",
+        "renewal"
+      ]
     }
   },
   "required": [

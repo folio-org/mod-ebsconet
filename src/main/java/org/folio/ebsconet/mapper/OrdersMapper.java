@@ -6,9 +6,12 @@ import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.FundDistribution;
 import org.folio.ebsconet.domain.dto.Location;
 import org.folio.ebsconet.domain.dto.Organization;
+import org.folio.ebsconet.domain.dto.PaymentStatus;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
+import org.folio.ebsconet.domain.dto.ReceiptStatus;
 import org.folio.ebsconet.domain.dto.Source;
+import org.folio.ebsconet.error.UnprocessableEntity;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,10 +27,16 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
-import static org.folio.ebsconet.service.NotesService.EBSCONET_CUSTOMER_NOTE;
+import static org.folio.ebsconet.domain.dto.EbsconetOrderLine.TypeEnum.NON_RENEWAL;
 
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class OrdersMapper {
+
+  final static String CANNOT_CANCEL_BECAUSE_COMPLETE =
+    "Order line was not automatically canceled because it is already complete.";
+  final static String CANNOT_CANCEL_BECAUSE_ALREADY_CANCELED =
+    "Order line was not automatically canceled because it is already canceled.";
+
   @Mapping(target = "vendor", source = "vendor.code")
   @Mapping(target = "cancellationRestriction", source = "line.cancellationRestriction")
   @Mapping(target = "cancellationRestrictionNote", source = "line.cancellationRestrictionNote")
@@ -85,6 +94,10 @@ public abstract class OrdersMapper {
 
     populateCostAndLocations(poLine, ebsconetOrderLine);
     removeZeroAmountLocations(poLine);
+
+    if (ebsconetOrderLine.getType() == NON_RENEWAL)
+      cancelOrderLine(poLine);
+
     if (fund != null) {
       var fundDistribution = new FundDistribution()
         .fundId(fund.getId())
@@ -235,5 +248,26 @@ public abstract class OrdersMapper {
       location.setQuantityPhysical(0);
       location.setQuantityElectronic(0);
     });
+  }
+
+  private void cancelOrderLine(CompositePoLine poLine) {
+    List<PaymentStatus> paymentResolved = List.of(PaymentStatus.PAYMENT_NOT_REQUIRED, PaymentStatus.FULLY_PAID,
+      PaymentStatus.CANCELLED);
+    List<ReceiptStatus> receiptResolved = List.of(ReceiptStatus.RECEIPT_NOT_REQUIRED, ReceiptStatus.FULLY_RECEIVED,
+      ReceiptStatus.CANCELLED);
+    PaymentStatus paymentStatus = poLine.getPaymentStatus();
+    ReceiptStatus receiptStatus = poLine.getReceiptStatus();
+    if (paymentResolved.contains(paymentStatus) && paymentStatus != PaymentStatus.CANCELLED &&
+        receiptResolved.contains(receiptStatus) && receiptStatus != ReceiptStatus.CANCELLED) {
+      throw new UnprocessableEntity(CANNOT_CANCEL_BECAUSE_COMPLETE);
+    }
+    if ((paymentResolved.contains(paymentStatus) && receiptStatus == ReceiptStatus.CANCELLED) ||
+        (paymentStatus == PaymentStatus.CANCELLED && receiptResolved.contains(receiptStatus))) {
+      throw new UnprocessableEntity(CANNOT_CANCEL_BECAUSE_ALREADY_CANCELED);
+    }
+    if (!paymentResolved.contains(paymentStatus))
+      poLine.setPaymentStatus(PaymentStatus.CANCELLED);
+    if (!receiptResolved.contains(receiptStatus))
+      poLine.setReceiptStatus(ReceiptStatus.CANCELLED);
   }
 }

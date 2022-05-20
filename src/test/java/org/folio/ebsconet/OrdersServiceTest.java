@@ -724,8 +724,13 @@ class OrdersServiceTest {
     verify(financeClient, times(1)).getExpenseClassesByQuery(anyString());
   }
 
-  @Test
-  void cancelPoLine() {
+  @ParameterizedTest
+  @CsvSource({
+    "Awaiting Payment, Partially Received, Cancelled, Cancelled",
+    "Partially Paid, Cancelled, Cancelled, Cancelled",
+    "Cancelled, Pending, Cancelled, Cancelled",
+  })
+  void cancelPoLine(String paymentStatus, String receiptStatus, String resultPaymentStatus, String resultReceiptStatus) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
     ebsconetOrderLine.setType(NON_RENEWAL);
 
@@ -740,8 +745,8 @@ class OrdersServiceTest {
 
     CompositePoLine compositePoLine = getSampleCompPoLine();
     compositePoLine.setId(poLine.getId());
-    compositePoLine.setPaymentStatus(PaymentStatus.AWAITING_PAYMENT);
-    compositePoLine.setReceiptStatus(ReceiptStatus.PARTIALLY_RECEIVED);
+    compositePoLine.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
+    compositePoLine.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
 
     when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
 
@@ -753,12 +758,12 @@ class OrdersServiceTest {
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
     verify(ordersClient, times(1)).putOrderLine(anyString(),
-      argThat(line -> line.getPaymentStatus() == PaymentStatus.CANCELLED &&
-        line.getReceiptStatus() == ReceiptStatus.CANCELLED));
+      argThat(line -> line.getPaymentStatus() == PaymentStatus.fromValue(resultPaymentStatus) &&
+        line.getReceiptStatus() == ReceiptStatus.fromValue(resultReceiptStatus)));
   }
 
   @Test
-  void shouldThrowExceptionIfPoLineCannotBeCanceled() {
+  void shouldThrowExceptionCannotCancelComplete() {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
     ebsconetOrderLine.setType(NON_RENEWAL);
 
@@ -783,6 +788,39 @@ class OrdersServiceTest {
     Exception exception = assertThrows(UnprocessableEntity.class,
       () -> ordersService.updateEbscoNetOrderLine(ebsconetOrderLine));
     assertThat(exception.getMessage(),is("Order line was not automatically canceled because it is already complete."));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "Fully Paid, Cancelled",
+    "Cancelled, Receipt Not Required",
+    "Cancelled, Cancelled",
+  })
+  void shouldThrowExceptionAlreadyCanceled(String paymentStatus, String receiptStatus) {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
+    ebsconetOrderLine.setType(NON_RENEWAL);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+    compositePoLine.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
+    compositePoLine.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
+    Exception exception = assertThrows(UnprocessableEntity.class,
+      () -> ordersService.updateEbscoNetOrderLine(ebsconetOrderLine));
+    assertThat(exception.getMessage(),is("Order line was not automatically canceled because it is already canceled."));
   }
 
 

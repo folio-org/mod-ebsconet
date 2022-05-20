@@ -32,9 +32,9 @@ import static org.folio.ebsconet.domain.dto.EbsconetOrderLine.TypeEnum.NON_RENEW
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class OrdersMapper {
 
-  final static String CANNOT_CANCEL_BECAUSE_COMPLETE =
+  static final String CANNOT_CANCEL_BECAUSE_COMPLETE =
     "Order line was not automatically canceled because it is already complete.";
-  final static String CANNOT_CANCEL_BECAUSE_ALREADY_CANCELED =
+  static final String CANNOT_CANCEL_BECAUSE_ALREADY_CANCELED =
     "Order line was not automatically canceled because it is already canceled.";
 
   @Mapping(target = "vendor", source = "vendor.code")

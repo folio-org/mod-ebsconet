@@ -85,6 +85,11 @@
       "$ref": "../mod-orders/workflow_status.json",
       "description": "the workflow status for the purchase order",
       "readOnly": true
+    },
+    "customerNote": {
+      "type": "string",
+      "description": "customerNote on the ebsconet's end can be associated with this purchase order line",
+      "readOnly": false
     }
   },
   "required": [

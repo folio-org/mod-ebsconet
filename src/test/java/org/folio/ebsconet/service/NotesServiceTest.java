@@ -59,16 +59,12 @@ public class NotesServiceTest {
 
     var compositePoLine = new CompositePoLine();
     compositePoLine.setId(poLine.getId());
-    System.out.println("heloo 1");
+
     when(noteTypeClient.getNoteTypesByQuery(anyString())).thenReturn(sampleNoteTypes);
-    System.out.println("heloo 2");
     when(noteLinksClient.getNotesByPoLineId(anyString())).thenReturn(new NoteCollection().notes(new ArrayList<>()));
-    System.out.println("heloo 3");
     when(notesClient.postNote(any())).thenReturn(sampleNote);
-System.out.println("heloo 4");
-System.out.println("heloo 6");
+
     notesService.linkCustomerNote(holder);
-    System.out.println("heloo 5");
     ArgumentCaptor<Note> argumentCaptor = ArgumentCaptor.forClass(Note.class);
     verify(notesClient).postNote(argumentCaptor.capture());
     Note note = argumentCaptor.getValue();

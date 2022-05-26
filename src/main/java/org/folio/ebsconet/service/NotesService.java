@@ -37,7 +37,8 @@ public class NotesService {
 
     var note = this.getNoteByPoLineId(generalNoteTypeId, mappingDataHolder.getCompositePoLine().getId());
     if (note == null) {
-      note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(), generalNoteTypeId);
+      note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),
+       mappingDataHolder.getEbsconetOrderLine().getCustomerNote(), generalNoteTypeId);
       createNote(note);
     }
   }
@@ -51,13 +52,14 @@ public class NotesService {
       .orElse(null);
   }
 
-  private Note buildNewPoLineNote(String polineId, String generalNoteTypeId) {
+  private Note buildNewPoLineNote(String polineId, String note, String generalNoteTypeId) {
 
     var link = new Link().id(polineId).type("poLine");
 
     var links = Collections.singletonList(link);
     return new Note().id(UUID.randomUUID().toString())
       .domain("orders")
+      .content(note)
       .typeId(generalNoteTypeId)
       .title(EBSCONET_CUSTOMER_NOTE)
       .links(links);

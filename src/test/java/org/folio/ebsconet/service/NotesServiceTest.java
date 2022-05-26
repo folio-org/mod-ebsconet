@@ -6,6 +6,7 @@ import org.folio.ebsconet.client.NoteLinksClient;
 import org.folio.ebsconet.client.NoteTypeClient;
 import org.folio.ebsconet.client.NotesClient;
 import org.folio.ebsconet.domain.dto.CompositePoLine;
+import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.Note;
 import org.folio.ebsconet.domain.dto.NoteCollection;
 import org.folio.ebsconet.domain.dto.PoLine;
@@ -44,6 +45,7 @@ public class NotesServiceTest {
   @Test
   void testLinkingNoteToPoline() throws IOException {
     var holder = new MappingDataHolder();
+    holder.setEbsconetOrderLine(new EbsconetOrderLine());
     holder.setCompositePoLine(new CompositePoLine().id(UUID.randomUUID().toString()));
     NoteCollection sampleNoteCollection = new ObjectMapper().readValue(new ClassPathResource("/mockdata/notes.json").getFile(), NoteCollection.class);
     Note sampleNote = sampleNoteCollection.getNotes().get(0);
@@ -57,12 +59,16 @@ public class NotesServiceTest {
 
     var compositePoLine = new CompositePoLine();
     compositePoLine.setId(poLine.getId());
-
+    System.out.println("heloo 1");
     when(noteTypeClient.getNoteTypesByQuery(anyString())).thenReturn(sampleNoteTypes);
+    System.out.println("heloo 2");
     when(noteLinksClient.getNotesByPoLineId(anyString())).thenReturn(new NoteCollection().notes(new ArrayList<>()));
+    System.out.println("heloo 3");
     when(notesClient.postNote(any())).thenReturn(sampleNote);
-
+System.out.println("heloo 4");
+System.out.println("heloo 6");
     notesService.linkCustomerNote(holder);
+    System.out.println("heloo 5");
     ArgumentCaptor<Note> argumentCaptor = ArgumentCaptor.forClass(Note.class);
     verify(notesClient).postNote(argumentCaptor.capture());
     Note note = argumentCaptor.getValue();

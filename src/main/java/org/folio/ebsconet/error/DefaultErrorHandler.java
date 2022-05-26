@@ -1,8 +1,8 @@
 package org.folio.ebsconet.error;
 
+import feign.FeignException;
 import feign.FeignException.BadRequest;
 import feign.FeignException.InternalServerError;
-import feign.FeignException.UnprocessableEntity;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ebsconet.domain.dto.Error;
 import org.folio.ebsconet.domain.dto.Errors;
@@ -65,8 +65,8 @@ public class DefaultErrorHandler {
       .body(errors);
   }
 
-  @ExceptionHandler(UnprocessableEntity.class)
-  public ResponseEntity<Errors> handleUnprocessableEntityError(final UnprocessableEntity exception) {
+  @ExceptionHandler({ UnprocessableEntity.class, FeignException.UnprocessableEntity.class })
+  public ResponseEntity<Errors> handleUnprocessableEntityError(final Exception exception) {
     log.error("DefaultErrorHandler: UnprocessableEntity: " + exception.getMessage());
     var errors = new Errors();
     errors.addErrorsItem(new Error()

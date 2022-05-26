@@ -86,6 +86,15 @@
       "description": "the workflow status for the purchase order",
       "readOnly": true
     },
+    "type": {
+      "type": "string",
+      "description": "Set to non-renewal to cancel the purchase order line",
+      "readOnly": true,
+      "enum": [
+        "non-renewal",
+        "renewal"
+      ]
+    },
     "customerNote": {
       "type": "string",
       "description": "customerNote on the ebsconet's end can be associated with this purchase order line",

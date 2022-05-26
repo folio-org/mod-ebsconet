@@ -19,15 +19,17 @@ import org.folio.ebsconet.domain.dto.Fund;
 import org.folio.ebsconet.domain.dto.FundCollection;
 import org.folio.ebsconet.domain.dto.FundDistribution;
 import org.folio.ebsconet.domain.dto.Location;
-import org.folio.ebsconet.domain.dto.Note;
 import org.folio.ebsconet.domain.dto.OrderFormat;
 import org.folio.ebsconet.domain.dto.Organization;
+import org.folio.ebsconet.domain.dto.PaymentStatus;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PoLineCollection;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
+import org.folio.ebsconet.domain.dto.ReceiptStatus;
 import org.folio.ebsconet.domain.dto.VendorDetail;
 import org.folio.ebsconet.domain.dto.WorkflowStatus;
 import org.folio.ebsconet.error.ResourceNotFoundException;
+import org.folio.ebsconet.error.UnprocessableEntity;
 import org.folio.ebsconet.service.NotesService;
 import org.folio.ebsconet.service.OrdersService;
 import org.junit.jupiter.api.DisplayName;
@@ -57,16 +59,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.folio.ebsconet.domain.dto.EbsconetOrderLine.TypeEnum.NON_RENEWAL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -721,6 +723,106 @@ class OrdersServiceTest {
     verify(ordersClient, times(1)).putOrderLine(anyString(),any());
     verify(financeClient, times(1)).getExpenseClassesByQuery(anyString());
   }
+
+  @ParameterizedTest
+  @CsvSource({
+    "Awaiting Payment, Partially Received, Cancelled, Cancelled",
+    "Partially Paid, Cancelled, Cancelled, Cancelled",
+    "Cancelled, Pending, Cancelled, Cancelled",
+  })
+  void cancelPoLine(String paymentStatus, String receiptStatus, String resultPaymentStatus, String resultReceiptStatus) {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
+    ebsconetOrderLine.setType(NON_RENEWAL);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+    compositePoLine.setId(poLine.getId());
+    compositePoLine.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
+    compositePoLine.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
+
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    verify(ordersClient, times(1)).putOrderLine(anyString(),
+      argThat(line -> line.getPaymentStatus() == PaymentStatus.fromValue(resultPaymentStatus) &&
+        line.getReceiptStatus() == ReceiptStatus.fromValue(resultReceiptStatus)));
+  }
+
+  @Test
+  void shouldThrowExceptionCannotCancelComplete() {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
+    ebsconetOrderLine.setType(NON_RENEWAL);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+    compositePoLine.setPaymentStatus(PaymentStatus.FULLY_PAID);
+    compositePoLine.setReceiptStatus(ReceiptStatus.RECEIPT_NOT_REQUIRED);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
+    Exception exception = assertThrows(UnprocessableEntity.class,
+      () -> ordersService.updateEbscoNetOrderLine(ebsconetOrderLine));
+    assertThat(exception.getMessage(),is("Order line was not automatically canceled because it is already complete."));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "Fully Paid, Cancelled",
+    "Cancelled, Receipt Not Required",
+    "Cancelled, Cancelled",
+  })
+  void shouldThrowExceptionAlreadyCanceled(String paymentStatus, String receiptStatus) {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
+    ebsconetOrderLine.setType(NON_RENEWAL);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+    compositePoLine.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
+    compositePoLine.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
+    Exception exception = assertThrows(UnprocessableEntity.class,
+      () -> ordersService.updateEbscoNetOrderLine(ebsconetOrderLine));
+    assertThat(exception.getMessage(),is("Order line was not automatically canceled because it is already canceled."));
+  }
+
 
   private static Stream<Arguments> getPriceParameters() {
     // see https://issues.folio.org/browse/MODEBSNET-10

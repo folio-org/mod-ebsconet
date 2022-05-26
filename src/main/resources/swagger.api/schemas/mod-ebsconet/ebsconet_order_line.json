@@ -94,6 +94,11 @@
         "non-renewal",
         "renewal"
       ]
+    },
+    "customerNote": {
+      "type": "string",
+      "description": "customerNote on the ebsconet's end can be associated with this purchase order line",
+      "readOnly": false
     }
   },
   "required": [

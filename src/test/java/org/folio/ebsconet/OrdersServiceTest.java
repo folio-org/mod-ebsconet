@@ -313,7 +313,7 @@ class OrdersServiceTest {
     poline.setPoLineNumber("1");
 
     Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersClient.getOrderLinesByQuery(any())).thenThrow(new FeignException.NotFound("", request, "".getBytes()));
+    when(ordersClient.getOrderLinesByQuery(any())).thenThrow(new FeignException.NotFound("", request, "".getBytes(), null));
     ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
       () -> ordersService.updateEbscoNetOrderLine(poline));
     assertThat(resourceNotFoundException.getMessage(),is("PO Line not found: 1"));

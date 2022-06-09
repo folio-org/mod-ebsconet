@@ -78,7 +78,7 @@ class OrdersControllerTest extends TestBase {
   void shouldReturnInternalErrorForInternalDateParsingIssue() {
     String urlWithRandomUuid = poLineUrl + PO_LINE_NUMBER;
     Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new InternalServerError("error", request,"".getBytes(), null));
+    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new InternalServerError("error", request,"".getBytes(), request.headers()));
 
     get(urlWithRandomUuid)
       .then()
@@ -90,7 +90,7 @@ class OrdersControllerTest extends TestBase {
   void shouldReturnUnprocessableEntityIfGetSuchResponse() {
     String urlWithRandomUuid = poLineUrl + PO_LINE_NUMBER;
     Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new UnprocessableEntity("error", request,"".getBytes(), null));
+    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new UnprocessableEntity("error", request,"".getBytes(), request.headers()));
 
     get(urlWithRandomUuid)
       .then()
@@ -102,7 +102,7 @@ class OrdersControllerTest extends TestBase {
   void shouldReturnBadRequestIfGetSuchResponse() {
     String urlWithRandomUuid = poLineUrl + PO_LINE_NUMBER;
     Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new BadRequest("error", request,"".getBytes(), null));
+    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new BadRequest("error", request,"".getBytes(), request.headers()));
 
     get(urlWithRandomUuid)
       .then()

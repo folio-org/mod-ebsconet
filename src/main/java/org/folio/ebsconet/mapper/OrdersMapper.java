@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
-import static org.folio.ebsconet.domain.dto.EbsconetOrderLine.TypeEnum.NON_RENEWAL;
 
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class OrdersMapper {
@@ -95,9 +94,11 @@ public abstract class OrdersMapper {
     populateCostAndLocations(poLine, ebsconetOrderLine);
     removeZeroAmountLocations(poLine);
 
-    if (ebsconetOrderLine.getType() == NON_RENEWAL)
-      cancelOrderLine(poLine);
-
+    if (ebsconetOrderLine.getType()!= null) {
+      if (ebsconetOrderLine.getType().equalsIgnoreCase("non-renewal")) {
+        cancelOrderLine(poLine);
+      }
+    }
     if (fund != null) {
       var fundDistribution = new FundDistribution()
         .fundId(fund.getId())

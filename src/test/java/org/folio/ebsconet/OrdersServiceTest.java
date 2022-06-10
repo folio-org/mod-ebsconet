@@ -59,7 +59,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.folio.ebsconet.domain.dto.EbsconetOrderLine.TypeEnum.NON_RENEWAL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -732,7 +731,7 @@ class OrdersServiceTest {
   })
   void cancelPoLine(String paymentStatus, String receiptStatus, String resultPaymentStatus, String resultReceiptStatus) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
-    ebsconetOrderLine.setType(NON_RENEWAL);
+    ebsconetOrderLine.setType("non-renewal");
 
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
@@ -765,7 +764,7 @@ class OrdersServiceTest {
   @Test
   void shouldThrowExceptionCannotCancelComplete() {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
-    ebsconetOrderLine.setType(NON_RENEWAL);
+    ebsconetOrderLine.setType("non-renewal");
 
     CompositePoLine compositePoLine = getSampleCompPoLine();
     compositePoLine.setPaymentStatus(PaymentStatus.FULLY_PAID);
@@ -798,7 +797,7 @@ class OrdersServiceTest {
   })
   void shouldThrowExceptionAlreadyCanceled(String paymentStatus, String receiptStatus) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
-    ebsconetOrderLine.setType(NON_RENEWAL);
+    ebsconetOrderLine.setType("non-renewal");
 
     CompositePoLine compositePoLine = getSampleCompPoLine();
     compositePoLine.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));

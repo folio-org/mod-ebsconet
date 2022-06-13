@@ -94,11 +94,10 @@ public abstract class OrdersMapper {
     populateCostAndLocations(poLine, ebsconetOrderLine);
     removeZeroAmountLocations(poLine);
 
-    if (ebsconetOrderLine.getType()!= null) {
-      if (ebsconetOrderLine.getType().equalsIgnoreCase("non-renewal")) {
+    if (ebsconetOrderLine.getType()!= null && ebsconetOrderLine.getType().equalsIgnoreCase("non-renewal")) {
         cancelOrderLine(poLine);
-      }
     }
+
     if (fund != null) {
       var fundDistribution = new FundDistribution()
         .fundId(fund.getId())

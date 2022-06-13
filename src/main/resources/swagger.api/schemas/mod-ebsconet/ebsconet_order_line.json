@@ -90,10 +90,8 @@
       "type": "string",
       "description": "Set to non-renewal to cancel the purchase order line",
       "readOnly": true,
-      "enum": [
-        "non-renewal",
-        "renewal"
-      ]
+      "pattern": "^([Rr][Ee][Nn][Ee][Ww][Aa][Ll]|[Nn][Oo][Nn][-][Rr][Ee][Nn][Ee][Ww][Aa][Ll])$"
+
     },
     "customerNote": {
       "type": "string",

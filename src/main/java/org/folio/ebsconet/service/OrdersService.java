@@ -75,7 +75,12 @@ public class OrdersService {
     log.info("compositePoLine: {}", mappingDataHolder.getCompositePoLine());
 
     ordersClient.putOrderLine(mappingDataHolder.getCompositePoLine().getId(), mappingDataHolder.getCompositePoLine());
-    notesService.linkCustomerNote(mappingDataHolder);
+
+    if(mappingDataHolder.getEbsconetOrderLine().getCustomerNote() != null
+      && !mappingDataHolder.getEbsconetOrderLine().getCustomerNote().isEmpty() ) {
+      notesService.linkCustomerNote(mappingDataHolder);
+    }
+
     // create or update customer note after poLine update
   }
 

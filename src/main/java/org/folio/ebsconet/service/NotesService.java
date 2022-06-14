@@ -39,8 +39,11 @@ public class NotesService {
     if (note == null) {
       note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),
        mappingDataHolder.getEbsconetOrderLine().getCustomerNote(), generalNoteTypeId);
-      createNote(note);
     }
+    else {
+      note.setContent(mappingDataHolder.getEbsconetOrderLine().getCustomerNote());
+    }
+    createNote(note);
   }
 
   public Note getNoteByPoLineId(String generalNoteTypeId, String polineId) {

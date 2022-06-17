@@ -27,20 +27,33 @@ public class NotesService {
     log.info("Create customer note {}", note);
     return notesClient.postNote(note);
   }
+  public void deleteNote(String id) {
+    log.info("Delete customer note by id {}", id);
+     notesClient.deleteNote(id);
+  }
 
   public void linkCustomerNote(MappingDataHolder mappingDataHolder) {
     String generalNoteTypeId = noteTypeClient.getNoteTypesByQuery("name==" + GENERAL_NOTE_TYPE)
-      .get("noteTypes")
-      .get(0)
-      .get("id")
-      .asText();
-
+        .get("noteTypes")
+        .get(0)
+        .get("id")
+        .asText();
     var note = this.getNoteByPoLineId(generalNoteTypeId, mappingDataHolder.getCompositePoLine().getId());
-    if (note == null) {
-      note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),
-       mappingDataHolder.getEbsconetOrderLine().getCustomerNote(), generalNoteTypeId);
+
+    if (mappingDataHolder.getEbsconetOrderLine().getCustomerNote() != null
+      && !mappingDataHolder.getEbsconetOrderLine().getCustomerNote().isEmpty()) {
+      if (note == null) {
+        note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),
+          mappingDataHolder.getEbsconetOrderLine().getCustomerNote(), generalNoteTypeId);
+      } else {
+        note.setContent(mappingDataHolder.getEbsconetOrderLine().getCustomerNote());
+      }
       createNote(note);
     }
+   else if(note != null){
+       deleteNote(note.getId());
+    }
+
   }
 
   public Note getNoteByPoLineId(String generalNoteTypeId, String polineId) {

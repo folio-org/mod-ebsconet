@@ -46,6 +46,7 @@ public class NotesServiceTest {
   void testLinkingNoteToPoline() throws IOException {
     var holder = new MappingDataHolder();
     holder.setEbsconetOrderLine(new EbsconetOrderLine());
+    holder.getEbsconetOrderLine().setCustomerNote("TestNote");
     holder.setCompositePoLine(new CompositePoLine().id(UUID.randomUUID().toString()));
     NoteCollection sampleNoteCollection = new ObjectMapper().readValue(new ClassPathResource("/mockdata/notes.json").getFile(), NoteCollection.class);
     Note sampleNote = sampleNoteCollection.getNotes().get(0);

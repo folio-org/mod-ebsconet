@@ -1,4 +1,18 @@
-## 1.3.0 - Unreleased
+## 1.4.0 - Unreleased
+
+## 1.3.0 Morning Glory R2 2022 - Released
+This release contains update logic to support customer note, renwal note, cancelling POL(s) through EBSCONET integration
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.2.0...v1.3.0)
+
+### Stories
+* [MODEBSNET-38](https://issues.folio.org/browse/MODEBSNET-38) Remove org.json:json, license is not open source
+* [MODEBSNET-35](https://issues.folio.org/browse/MODEBSNET-35) Mod-ebsconet: spring update
+* [MODEBSNET-33](https://issues.folio.org/browse/MODEBSNET-33) Update logic for supporting "customer note" from EBSCONET(Part 2)
+* [MODEBSNET-30](https://issues.folio.org/browse/MODEBSNET-30) Update logic for supporting "Renewal note" from EBSCONET
+* [MODEBSNET-27](https://issues.folio.org/browse/MODEBSNET-27) Update logic for supporting "customer note" from EBSCONET
+* [MODEBSNET-22](https://issues.folio.org/browse/MODEBSNET-22) Support canceling POL(s) through EBSCONET integration
+* [MODEBSNET-13](https://issues.folio.org/browse/MODEBSNET-13) Update logic for supporting fund expense classes
 
 ## 1.2.0 - Released
 This release contains schema updates in order to support mod-orders interfaces

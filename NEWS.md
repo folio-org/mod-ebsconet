@@ -1,5 +1,12 @@
 ## 1.4.0 - Unreleased
 
+## 1.3.1 (Bug Fix) - Released
+This release focused on fixing issue when renewal note becomes blank after Gobi order update
+
+### Bug Fixes
+* [MODEBSNET-39](https://issues.folio.org/browse/MODEBSNET-39) - Renewal note is blank after update
+
+
 ## 1.3.0 Morning Glory R2 2022 - Released
 This release contains update logic to support customer note, renwal note, cancelling POL(s) through EBSCONET integration
 

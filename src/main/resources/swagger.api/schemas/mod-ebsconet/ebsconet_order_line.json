@@ -34,7 +34,7 @@
       "description": "Publisher of the material",
       "readOnly": false
     },
-    "renewalNote": {
+    "internalNote": {
       "type": "string",
       "description": "Renewal note for this purchase order line"
     },

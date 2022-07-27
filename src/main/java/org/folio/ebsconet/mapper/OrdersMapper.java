@@ -50,7 +50,7 @@ public abstract class OrdersMapper {
   @Mapping(target = "publisherName", source = "line.publisher")
   @Mapping(target = "vendorAccountNumber", source = "line.vendorDetail.vendorAccount")
   @Mapping(target = "workflowStatus", source = "order.workflowStatus")
-  @Mapping(target = "renewalNote", source = "line.renewalNote")
+  @Mapping(target = "internalNote", source = "line.renewalNote")
   public abstract EbsconetOrderLine folioToEbsconet(PurchaseOrder order, PoLine line, Organization vendor);
 
   @Named("getFundCode")
@@ -89,7 +89,7 @@ public abstract class OrdersMapper {
     poLine.getDetails().setSubscriptionFrom(ebsconetOrderLine.getSubscriptionFromDate());
     poLine.getVendorDetail().setVendorAccount(ebsconetOrderLine.getVendorAccountNumber());
     poLine.setPublisher(ebsconetOrderLine.getPublisherName());
-    poLine.setRenewalNote(mappingDataHolder.getEbsconetOrderLine().getRenewalNote());
+    poLine.setRenewalNote(mappingDataHolder.getEbsconetOrderLine().getInternalNote());
 
     populateCostAndLocations(poLine, ebsconetOrderLine);
     removeZeroAmountLocations(poLine);

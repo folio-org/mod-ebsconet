@@ -224,7 +224,7 @@ class OrdersServiceTest {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
 
     var testRenewalNote = "Test renewal Note";
-    ebsconetOrderLine.renewalNote(testRenewalNote);
+    ebsconetOrderLine.internalNote(testRenewalNote);
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
     var poLine = new PoLine();

@@ -3,6 +3,8 @@
 ## 1.3.1 (Bug Fix) - Released
 This release focused on fixing issue when renewal note becomes blank after Gobi order update
 
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.3.0...v1.3.1)
+
 ### Bug Fixes
 * [MODEBSNET-39](https://issues.folio.org/browse/MODEBSNET-39) - Renewal note is blank after update
 

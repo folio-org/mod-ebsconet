@@ -35,6 +35,7 @@ public abstract class OrdersMapper {
     "Order line was not automatically canceled because it is already complete.";
   static final String CANNOT_CANCEL_BECAUSE_ALREADY_CANCELED =
     "Order line was not automatically canceled because it is already canceled.";
+  private static final BigDecimal ONE_HUNDRED_PERCENT = BigDecimal.valueOf(100);
 
   @Mapping(target = "vendor", source = "vendor.code")
   @Mapping(target = "cancellationRestriction", source = "line.cancellationRestriction")
@@ -103,8 +104,8 @@ public abstract class OrdersMapper {
         .fundId(fund.getId())
         .code(fund.getCode())
         .expenseClassId(mappingDataHolder.getExpenseClass())
-        .distributionType(FundDistribution.DistributionTypeEnum.AMOUNT)
-        .value(ebsconetOrderLine.getUnitPrice().multiply(BigDecimal.valueOf(ebsconetOrderLine.getQuantity())));
+        .distributionType(FundDistribution.DistributionTypeEnum.PERCENTAGE)
+        .value(ONE_HUNDRED_PERCENT);
 
       poLine.fundDistribution(Collections.singletonList(fundDistribution));
     }

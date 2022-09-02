@@ -50,8 +50,8 @@ public class NotesService {
       }
       createNote(note);
     }
-   else if(note != null){
-       deleteNote(note.getId());
+    else if (note != null) {
+      deleteNote(note.getId());
     }
 
   }

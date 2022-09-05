@@ -11,6 +11,7 @@ import org.folio.ebsconet.models.MappingDataHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -50,7 +51,7 @@ public class NotesService {
       }
       createNote(note);
     }
-    else if (note != null) {
+    else if (Objects.nonNull(note)) {
       deleteNote(note.getId());
     }
 

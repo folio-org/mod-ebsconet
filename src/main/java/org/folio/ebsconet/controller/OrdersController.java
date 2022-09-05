@@ -25,12 +25,12 @@ public class OrdersController implements OrdersApi {
   }
 
   @Override
-  public ResponseEntity<Void> putEbsconetOrderLine(String poLineNumber, EbsconetOrderLine ebsconetOrderLine) {
+  public ResponseEntity<String> putEbsconetOrderLine(String poLineNumber, EbsconetOrderLine ebsconetOrderLine) {
     log.info("putEbsconetOrderLine: {}", ebsconetOrderLine);
     if (!ebsconetOrderLine.getPoLineNumber().equals(poLineNumber)) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    return new ResponseEntity<>('done', HttpStatus.OK);
   }
 }

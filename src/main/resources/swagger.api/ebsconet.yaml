@@ -69,6 +69,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
         '400':
           description:
             Bad request, e.g. malformed request body or query parameter.

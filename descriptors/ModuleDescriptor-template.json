@@ -62,6 +62,7 @@
             "orders.po-lines.item.get",
             "orders.po-lines.item.put",
             "notes.item.post",
+            "notes.item.delete",
             "notes.collection.get.by.status",
             "note.types.collection.get",
             "notes.domain.all"

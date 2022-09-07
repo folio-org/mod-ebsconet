@@ -372,6 +372,7 @@ class OrdersServiceTest {
     var updatedCompLine = argumentCaptor.getValue();
 
     assertEquals(expectedEQuantity , updatedCompLine.getLocations().get(0).getQuantityElectronic());
+    assertEquals("percentage" , updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
     assertEquals(expectedPQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
 
     assertEquals(expectedEQuantity, updatedCompLine.getCost().getQuantityElectronic());
@@ -415,7 +416,7 @@ class OrdersServiceTest {
 
     assertEquals(expectedEPrice.doubleValue(), updatedCompLine.getCost().getListUnitPriceElectronic().doubleValue(), 2);
     assertEquals(expectedPPrice.doubleValue(), updatedCompLine.getCost().getListUnitPrice().doubleValue(), 2);
-
+    assertEquals("percentage" , updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
   }
 
   @ParameterizedTest

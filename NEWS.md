@@ -1,5 +1,15 @@
 ## 1.4.0 - Unreleased
 
+## 1.3.2 (Morning Glory R2 2022 Bug Fix) - Released
+This release focused on fixing issue with missing permission and changing fund distribution type for ebsconet orders to percentage
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.3.1...v1.3.2)
+
+### Bug Fixes
+* [MODEBSNET-43](https://issues.folio.org/browse/MODEBSNET-43) - Missed permission notes.item.delete
+* [MODEBSNET-42](https://issues.folio.org/browse/MODEBSNET-42) - Verify calculation logic for handling mixed orders for ebsconet
+
+
 ## 1.3.1 (Bug Fix) - Released
 This release focused on fixing issue when renewal note becomes blank after Gobi order update
 

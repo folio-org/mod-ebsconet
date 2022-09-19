@@ -1,5 +1,14 @@
 ## 1.4.0 - Unreleased
 
+## 1.3.3 (Morning Glory R2 2022 Bug Fix) - Released
+This release focused on fixing issue with missing permission for retrieving expense classes
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.3.2...v1.3.3)
+
+### Bug Fixes
+* [MODEBSNET-43](https://issues.folio.org/browse/MODEBSNET-43) - Missed permission "finance.expense-classes.item.get"
+
+
 ## 1.3.2 (Morning Glory R2 2022 Bug Fix) - Released
 This release focused on fixing issue with missing permission and changing fund distribution type for ebsconet orders to percentage
 

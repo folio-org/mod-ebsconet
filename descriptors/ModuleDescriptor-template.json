@@ -41,6 +41,7 @@
             "ebsconet.order-lines.item.get"
           ],
           "modulePermissions": [
+            "finance.expense-classes.item.get",
             "orders.item.get",
             "orders.po-lines.collection.get",
             "organizations.organizations.item.get"

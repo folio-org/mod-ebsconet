@@ -1,4 +1,13 @@
-## 1.4.0 - Unreleased
+## 1.5.0 - Unreleased
+
+## 1.4.0 Nolana R3 2022
+The focus of this release was to RMB upgrade and interface version update
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.3.0...v1.4.0)
+
+### Stories
+* [MODEBSNET-47](https://issues.folio.org/browse/MODEBSNET-47) Spring base upgrade to 5.0.1
+* [MODEBSNET-40](https://issues.folio.org/browse/MODEBSNET-40) mod-notes interface version update
 
 ## 1.3.0 Morning Glory R2 2022 - Released
 This release contains update logic to support customer note, renwal note, cancelling POL(s) through EBSCONET integration

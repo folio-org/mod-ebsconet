@@ -1,7 +1,7 @@
 ## 1.5.0 - Unreleased
 
 ## 1.4.0 Nolana R3 2022
-The focus of this release was to
+The focus of this release was to RMB upgrade and interface version update
 
 [Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.3.0...v1.4.0)
 

@@ -25,33 +25,37 @@ public class NotesService {
   public static final String EBSCONET_CUSTOMER_NOTE = "EBSCONET Customer Note";
 
   public Note createNote(Note note) {
-    log.info("Create customer note {}", note);
+    log.info("Creating customer note: {}", note);
     return notesClient.postNote(note);
   }
   public void deleteNote(String id) {
-    log.info("Delete customer note by id {}", id);
+    log.info("Deleting customer note by id {}", id);
      notesClient.deleteNote(id);
   }
 
   public void linkCustomerNote(MappingDataHolder mappingDataHolder) {
+    log.debug("Link customer note to poLine");
     String generalNoteTypeId = noteTypeClient.getNoteTypesByQuery("name==" + GENERAL_NOTE_TYPE)
         .get("noteTypes")
         .get(0)
         .get("id")
         .asText();
     var note = this.getNoteByPoLineId(generalNoteTypeId, mappingDataHolder.getCompositePoLine().getId());
-
+    log.info("Note {}, generalNotTypeId: {}", note, generalNoteTypeId);
     if (mappingDataHolder.getEbsconetOrderLine().getCustomerNote() != null
       && !mappingDataHolder.getEbsconetOrderLine().getCustomerNote().isEmpty()) {
       if (note == null) {
+        log.warn("Customer note is not found for poLineId: {}", mappingDataHolder.getCompositePoLine().getId());
         note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),
           mappingDataHolder.getEbsconetOrderLine().getCustomerNote(), generalNoteTypeId);
       } else {
         note.setContent(mappingDataHolder.getEbsconetOrderLine().getCustomerNote());
       }
+      log.info("Creating note: {}", note);
       createNote(note);
     }
     else if (Objects.nonNull(note)) {
+      log.warn("Ebsconet order line customer note is empty for poLineId: {}", mappingDataHolder.getCompositePoLine().getId());
       deleteNote(note.getId());
     }
 
@@ -67,7 +71,6 @@ public class NotesService {
   }
 
   private Note buildNewPoLineNote(String polineId, String note, String generalNoteTypeId) {
-
     var link = new Link().id(polineId).type("poLine");
 
     var links = Collections.singletonList(link);

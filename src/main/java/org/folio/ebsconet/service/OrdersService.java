@@ -55,7 +55,7 @@ public class OrdersService {
       expenseClassCode = ":" + financeClient.getExpenseClassesById(line.getFundDistribution().get(0).getExpenseClassId()).getCode();
       line.getFundDistribution().get(0).setCode(line.getFundDistribution().get(0).getCode() + expenseClassCode);
     }
-    log.info("Expense class is retrieved with id: {}", line.getFundDistribution().get(0).getExpenseClassId());
+    log.info("Expense class is retrieved with code: {}", expenseClassCode);
     EbsconetOrderLine eol = ordersMapper.folioToEbsconet(order, line, vendor);
     log.info("Ebsconet order line is mapped from folio order line with id: {}", line.getId());
     return eol;

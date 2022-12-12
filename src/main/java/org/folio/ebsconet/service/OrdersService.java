@@ -33,7 +33,7 @@ public class OrdersService {
 
 
   public EbsconetOrderLine getEbscoNetOrderLine(String poLineNumber) {
-    log.debug("Trying to get ebsconet order line with poLineNumber: {}", poLineNumber);
+    log.info("Trying to get ebsconet order line with poLineNumber: {}", poLineNumber);
     PoLineCollection queryResult;
     try {
       queryResult = ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber);

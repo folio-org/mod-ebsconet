@@ -43,26 +43,26 @@ public class OrdersService {
     if (queryResult.getTotalRecords() < 1)
       throw new ResourceNotFoundException(PO_LINE_NOT_FOUND_MESSAGE + poLineNumber);
     PoLine line = queryResult.getPoLines().get(0);
-    log.info("Order line is retrieved with id: {}", line.getId());
+    log.debug("Order line is retrieved for poLineNumber: {}", poLineNumber);
     PurchaseOrder order = ordersClient.getOrderById(line.getPurchaseOrderId());
-    log.info("Order is retrieved with id: {}", order.getId());
+    log.debug("Order is retrieved with id: {}", order.getId());
     String vendorId = order.getVendor();
     var vendor = organizationClient.getOrganizationById(vendorId);
-    log.info("Vendor organization is retrieved with id: {}", vendor.getId());
+    log.debug("Vendor organization is retrieved for poLineNumber: {}", poLineNumber);
 
     String expenseClassCode = "";
     if (line.getFundDistribution() != null && !line.getFundDistribution().isEmpty() && line.getFundDistribution().get(0).getExpenseClassId() != null) {
       expenseClassCode = ":" + financeClient.getExpenseClassesById(line.getFundDistribution().get(0).getExpenseClassId()).getCode();
       line.getFundDistribution().get(0).setCode(line.getFundDistribution().get(0).getCode() + expenseClassCode);
     }
-    log.info("Expense class is retrieved with code: {}", expenseClassCode);
+    log.debug("Expense class is retrieved with code: {}", expenseClassCode);
     EbsconetOrderLine eol = ordersMapper.folioToEbsconet(order, line, vendor);
-    log.info("Ebsconet order line is mapped from folio order line with id: {}", line.getId());
+    log.debug("Ebsconet order line is mapped from folio order line for poLineNumber: {}", poLineNumber);
     return eol;
   }
 
   public void updateEbscoNetOrderLine(EbsconetOrderLine updateOrderLine) {
-    log.debug("Trying to update ebsconet order line with poLineNumber: {}", updateOrderLine.getPoLineNumber());
+    log.debug("Trying to update ebsconet order line: {}", updateOrderLine);
     MappingDataHolder mappingDataHolder = new MappingDataHolder();
     mappingDataHolder.setEbsconetOrderLine(updateOrderLine);
 
@@ -79,7 +79,7 @@ public class OrdersService {
   }
 
   private void updateHolderWithFinanceData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
-    log.debug("Trying to update data holder with finance data by ebconet order line with poLineNumber: {}", updateOrderLine.getPoLineNumber());
+    log.debug("Trying to update data holder with finance data by ebconet order line : {}", updateOrderLine);
     // Retrieve fund for update if needed
     if (!StringUtils.isEmpty(mappingDataHolder.getEbsconetOrderLine().getFundCode())) {
       FundCollection funds = financeClient.getFundsByQuery("code==" + extractFundCode(updateOrderLine.getFundCode()));
@@ -102,7 +102,7 @@ public class OrdersService {
   }
 
   private void updateHolderWithPoLineData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
-    log.debug("Trying to update data holder with poLine data by ebconet order line with poLineNumber: {}", updateOrderLine.getPoLineNumber());
+    log.debug("Trying to update data holder with poLine data by ebconet order line: {}", updateOrderLine);
     PoLineCollection poLines;
     try {
       poLines = ordersClient.getOrderLinesByQuery("poLineNumber==" + updateOrderLine.getPoLineNumber());

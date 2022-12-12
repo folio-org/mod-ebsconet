@@ -45,7 +45,7 @@ public class OrdersService {
     PoLine line = queryResult.getPoLines().get(0);
     log.debug("Order line is retrieved for poLineNumber: {}", poLineNumber);
     PurchaseOrder order = ordersClient.getOrderById(line.getPurchaseOrderId());
-    log.debug("Order is retrieved with id: {}", order.getId());
+    log.info("Order is retrieved with id: {}", poLineNumber);
     String vendorId = order.getVendor();
     var vendor = organizationClient.getOrganizationById(vendorId);
     log.debug("Vendor organization is retrieved for poLineNumber: {}", poLineNumber);
@@ -57,7 +57,7 @@ public class OrdersService {
     }
     log.debug("Expense class is retrieved with code: {}", expenseClassCode);
     EbsconetOrderLine eol = ordersMapper.folioToEbsconet(order, line, vendor);
-    log.debug("Ebsconet order line is mapped from folio order line for poLineNumber: {}", poLineNumber);
+    log.info("Ebsconet order line is mapped from folio order line for poLineNumber: {}", poLineNumber);
     return eol;
   }
 

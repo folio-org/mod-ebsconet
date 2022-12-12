@@ -45,7 +45,7 @@ public class OrdersService {
     PoLine line = queryResult.getPoLines().get(0);
     log.debug("Order line is retrieved for poLineNumber: {}", poLineNumber);
     PurchaseOrder order = ordersClient.getOrderById(line.getPurchaseOrderId());
-    log.info("Order is retrieved with id: {}", poLineNumber);
+    log.debug("Order is retrieved with id: {}", poLineNumber);
     String vendorId = order.getVendor();
     var vendor = organizationClient.getOrganizationById(vendorId);
     log.debug("Vendor organization is retrieved for poLineNumber: {}", poLineNumber);

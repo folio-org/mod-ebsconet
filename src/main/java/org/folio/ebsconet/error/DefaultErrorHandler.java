@@ -26,7 +26,7 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<Errors> handleConstraintViolation(final ConstraintViolationException exception) {
-    log.error("DefaultErrorHandler: ConstraintViolationException: " + exception.getMessage());
+    log.error("DefaultErrorHandler:: ConstraintViolationException: " + exception.getMessage());
     var errors = new Errors();
     exception.getConstraintViolations().forEach(constraintViolation ->
       errors.addErrorsItem(new Error()
@@ -41,7 +41,7 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<Errors> handleNotFoundExceptions(final ResourceNotFoundException exception) {
-    log.error("DefaultErrorHandler: ResourceNotFoundException: " + exception.getMessage());
+    log.error("DefaultErrorHandler:: ResourceNotFoundException: " + exception.getMessage());
     var errors = new Errors();
     errors.addErrorsItem(new Error()
       .message(exception.getMessage())
@@ -54,7 +54,7 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler(InternalServerError.class)
   public ResponseEntity<Errors> handleInternalServerError(final InternalServerError exception) {
-    log.error("DefaultErrorHandler: InternalServerError: " + exception.getMessage());
+    log.error("DefaultErrorHandler:: InternalServerError: " + exception.getMessage());
     var errors = new Errors();
     errors.addErrorsItem(new Error()
       .message(exception.getMessage())
@@ -67,7 +67,7 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler({ UnprocessableEntity.class, FeignException.UnprocessableEntity.class })
   public ResponseEntity<Errors> handleUnprocessableEntityError(final Exception exception) {
-    log.error("DefaultErrorHandler: UnprocessableEntity: " + exception.getMessage());
+    log.error("DefaultErrorHandler:: UnprocessableEntity: " + exception.getMessage());
     var errors = new Errors();
     errors.addErrorsItem(new Error()
       .message(exception.getMessage())
@@ -79,7 +79,7 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler(BadRequest.class)
   public ResponseEntity<Errors> handleBadRequestEntityError(final BadRequest exception) {
-    log.error("DefaultErrorHandler: BadRequest: " + exception.getMessage());
+    log.error("DefaultErrorHandler:: BadRequest: " + exception.getMessage());
     var errors = new Errors();
     errors.addErrorsItem(new Error()
       .message(exception.getMessage())
@@ -91,7 +91,7 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler({ NullPointerException.class, IllegalArgumentException.class, IllegalStateException.class })
   public ResponseEntity<Errors> handleInternal(final RuntimeException exception) {
-    log.error("DefaultErrorHandler: " + exception.getClass().getName() + ": " + exception.getMessage());
+    log.error("DefaultErrorHandler:: " + exception.getClass().getName() + ": " + exception.getMessage());
     return buildUnknownErrorResponse(exception.getMessage());
   }
 

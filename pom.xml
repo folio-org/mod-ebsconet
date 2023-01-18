@@ -22,8 +22,8 @@
   </licenses>
 
   <properties>
-    <java.version>11</java.version>
-    <folio-spring-base.version>5.0.1</folio-spring-base.version>
+    <java.version>17</java.version>
+    <folio-spring-base.version>6.0.0-SNAPSHOT</folio-spring-base.version>
     <json.version>20210307</json.version>
     <log4j.version>2.19.0</log4j.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
@@ -324,7 +324,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <release>11</release>
+          <release>${java.version}</release>
           <annotationProcessorPaths>
             <path>
               <groupId>org.mapstruct</groupId>

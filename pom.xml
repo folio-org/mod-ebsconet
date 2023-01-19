@@ -39,7 +39,7 @@
     <copy-rename-maven-plugin.version>1.0</copy-rename-maven-plugin.version>
     <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
     <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
     <maven-release-plugin.version>3.0.0-M7</maven-release-plugin.version>
 
@@ -63,6 +63,17 @@
       <groupId>org.folio</groupId>
       <artifactId>folio-spring-base</artifactId>
       <version>${folio-spring-base.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${spring-framework.version}</version>
     </dependency>
 
     <!-- Spring framework libraries dependencies -->

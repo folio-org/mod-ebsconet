@@ -14,13 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.TestSocketUtils;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.yml")
-@EnableTransactionManagement
 @Log4j2
 public class TestBase {
 

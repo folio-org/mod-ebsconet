@@ -1,13 +1,6 @@
 package org.folio.ebsconet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Description;
-import org.hamcrest.DiagnosingMatcher;
-import org.skyscreamer.jsonassert.JSONCompare;
-import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.skyscreamer.jsonassert.JSONCompareResult;
 
 import java.io.IOException;
 import java.io.InputStream;

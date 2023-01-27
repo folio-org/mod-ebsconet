@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.toList;
-
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class OrdersMapper {
 
@@ -113,16 +111,9 @@ public abstract class OrdersMapper {
 
   private void populateCostAndLocations(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     switch (poLine.getOrderFormat()) {
-    case ELECTRONIC_RESOURCE:
-      populateElectronicCostAndLocation(poLine, ebsconetOrderLine);
-      break;
-    case OTHER:
-    case PHYSICAL_RESOURCE:
-      populatePhysicalCostAndLocation(poLine, ebsconetOrderLine);
-      break;
-    case P_E_MIX:
-      populateCostAndLocationPEMix(poLine, ebsconetOrderLine);
-      break;
+      case ELECTRONIC_RESOURCE -> populateElectronicCostAndLocation(poLine, ebsconetOrderLine);
+      case OTHER, PHYSICAL_RESOURCE -> populatePhysicalCostAndLocation(poLine, ebsconetOrderLine);
+      case P_E_MIX -> populateCostAndLocationPEMix(poLine, ebsconetOrderLine);
     }
   }
 
@@ -238,7 +229,7 @@ public abstract class OrdersMapper {
     var nonZeroLocations = poLine.getLocations()
       .stream()
       .filter(locationQuantityGreaterThanZero)
-      .collect(toList());
+      .toList();
 
     poLine.setLocations(nonZeroLocations);
   }

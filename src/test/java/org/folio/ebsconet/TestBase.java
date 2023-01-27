@@ -11,16 +11,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.yml")
-@EnableTransactionManagement
 @Log4j2
 public class TestBase {
 
@@ -29,8 +27,7 @@ public class TestBase {
 
   @LocalServerPort
   protected int okapiPort;
-
-  public final static int WIRE_MOCK_PORT = SocketUtils.findAvailableTcpPort();
+  public final static int WIRE_MOCK_PORT = TestSocketUtils.findAvailableTcpPort();
 
   @Autowired
   private FolioModuleMetadata moduleMetadata;

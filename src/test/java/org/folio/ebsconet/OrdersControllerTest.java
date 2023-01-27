@@ -22,8 +22,11 @@ import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.service.OrdersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+@ExtendWith(MockitoExtension.class)
 class OrdersControllerTest extends TestBase {
   private static final String PO_LINE_URL = "http://localhost:%s/ebsconet/orders/order-lines/";
   private static final String PO_LINE_NUMBER = "268758-03";

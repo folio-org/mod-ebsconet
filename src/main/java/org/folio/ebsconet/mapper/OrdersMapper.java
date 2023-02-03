@@ -1,5 +1,6 @@
 package org.folio.ebsconet.mapper;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
@@ -151,17 +152,24 @@ public abstract class OrdersMapper {
     // Q physical = 1 and electronic > 1
     else if (poLine.getCost().getQuantityPhysical() == 1 && poLine.getCost().getQuantityElectronic() > 1) {
       poLine.getCost().setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
-      poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
       poLine.getCost().setQuantityPhysical(1);
-      poLine.getLocations().get(0).setQuantityPhysical(1);
+
+      if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+        poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
+        poLine.getLocations().get(0).setQuantityPhysical(1);
+      }
     }
 
     // Q physical > 1, Q electronic = 1
     else if (poLine.getCost().getQuantityPhysical() > 1 && poLine.getCost().getQuantityElectronic() == 1) {
       poLine.getCost().setQuantityPhysical(ebsconetOrderLine.getQuantity() - 1);
-      poLine.getLocations().get(0).setQuantityPhysical(ebsconetOrderLine.getQuantity() - 1);
       poLine.getCost().setQuantityElectronic(1);
-      poLine.getLocations().get(0).setQuantityElectronic(1);
+
+      if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+        poLine.getLocations().get(0).setQuantityPhysical(ebsconetOrderLine.getQuantity() - 1);
+        poLine.getLocations().get(0).setQuantityElectronic(1);
+      }
+
     }
 
     // Q (physical > 1 and Q electronic > 1)  OR  (physical = 1 and electronic = 1)
@@ -172,8 +180,11 @@ public abstract class OrdersMapper {
 
       poLine.getCost().setQuantityElectronic(newElectronicQuantity);
       poLine.getCost().setQuantityPhysical(newPhysicalQuantity);
-      poLine.getLocations().get(0).setQuantityElectronic(newElectronicQuantity);
-      poLine.getLocations().get(0).setQuantityPhysical(newPhysicalQuantity);
+
+      if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+        poLine.getLocations().get(0).setQuantityElectronic(newElectronicQuantity);
+        poLine.getLocations().get(0).setQuantityPhysical(newPhysicalQuantity);
+      }
     }
   }
 

@@ -82,6 +82,8 @@ class OrdersServiceTest {
   private FinanceClient financeClient;
   @Mock
   private OrganizationClient organizationClient;
+  @Mock
+  private NotesService notesService;
   @InjectMocks
   private OrdersService ordersService;
 

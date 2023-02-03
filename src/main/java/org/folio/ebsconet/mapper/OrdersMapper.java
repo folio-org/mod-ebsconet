@@ -1,5 +1,13 @@
 package org.folio.ebsconet.mapper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Collections;
+import java.util.Currency;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
@@ -18,14 +26,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValueCheckStrategy;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Collections;
-import java.util.Currency;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class OrdersMapper {
@@ -144,6 +144,8 @@ public abstract class OrdersMapper {
   }
 
   private void processPEMixQuantityUpdate(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+    clearLocationQuantities(poLine);
+
     // special case. 1 ebsconet item for PE mix = 1 physical + 1 electronic folio items
     if (ebsconetOrderLine.getQuantity() == 1) {
       redistributeSinglePeMixItem(poLine);
@@ -191,9 +193,6 @@ public abstract class OrdersMapper {
   private void redistributeSinglePeMixItem(CompositePoLine poLine) {
     poLine.getCost().setQuantityElectronic(1);
     poLine.getCost().setQuantityPhysical(1);
-
-    // set all location quantities to zero
-    clearLocationQuantities(poLine);
 
     // redistribute quantities for single and multiple locations
     if (poLine.getLocations().size() == 1) {

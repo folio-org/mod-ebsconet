@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.folio.ebsconet.client.FinanceClient;
 import org.folio.ebsconet.client.OrdersClient;
 import org.folio.ebsconet.client.OrganizationClient;
@@ -473,6 +475,49 @@ class OrdersServiceTest {
     } else {
       assertEquals(newLocation2Quantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
     }
+
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    {
+      "7, 3, 2,  Electronic Resource",
+      "7, 3, 2,  Physical Resource",
+      "7, 3, 2,  P/E Mix"
+    })
+  @DisplayName("Update line with emtpy locations (createInventory = NONE)")
+  void updateLineWithEmptyLocationsMix(int ebsconetQuantity, int currentPQuantity, int currentEQuantity, String orderType) {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
+
+    CompositePoLine compositePoLine = getSampleCompPoLine();
+
+    compositePoLine.setLocations(new ArrayList<>());
+
+    compositePoLine.setOrderFormat(OrderFormat.fromValue(orderType));
+
+    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
+    compositePoLine.getCost().setQuantityElectronic(currentEQuantity);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection().funds(Collections.singletonList(new Fund())).totalRecords(1);
+    when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
+    var updatedCompLine = argumentCaptor.getValue();
+
+    assertTrue(CollectionUtils.isEmpty(updatedCompLine.getLocations()));
 
   }
 

@@ -124,7 +124,9 @@ public abstract class OrdersMapper {
 
     clearLocationQuantities(poLine);
 
-    poLine.getLocations().get(0).setQuantityPhysical(ebsconetOrderLine.getQuantity());
+    if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+      poLine.getLocations().get(0).setQuantityPhysical(ebsconetOrderLine.getQuantity());
+    }
   }
 
 
@@ -135,7 +137,9 @@ public abstract class OrdersMapper {
 
     clearLocationQuantities(poLine);
 
-    poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity());
+    if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+      poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity());
+    }
   }
 
   private void populateCostAndLocationPEMix(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {

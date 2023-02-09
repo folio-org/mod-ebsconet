@@ -198,15 +198,14 @@ public abstract class OrdersMapper {
     poLine.getCost().setQuantityElectronic(1);
     poLine.getCost().setQuantityPhysical(1);
 
-    // redistribute quantities for single and multiple locations
+    // redistribute quantities for single and multiple locations. skip when locations empty
     if (poLine.getLocations().size() == 1) {
       poLine.getLocations().get(0).setQuantityPhysical(1);
       poLine.getLocations().get(0).setQuantityElectronic(1);
-    } else {
-      poLine.getLocations().get(0).setQuantityPhysical(1);
-      poLine.getLocations().get(1).setQuantityElectronic(1);
-    }
-
+    } else if (poLine.getLocations().size() > 1) {
+        poLine.getLocations().get(0).setQuantityPhysical(1);
+        poLine.getLocations().get(1).setQuantityElectronic(1);
+      }
   }
 
   private void processPEmixPriceUpdate(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {

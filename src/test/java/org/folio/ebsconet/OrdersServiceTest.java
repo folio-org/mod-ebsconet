@@ -482,8 +482,11 @@ class OrdersServiceTest {
   @CsvSource(
     {
       "7, 3, 2,  Electronic Resource",
+      "1, 3, 2,  Electronic Resource",
       "7, 3, 2,  Physical Resource",
-      "7, 3, 2,  P/E Mix"
+      "1, 3, 2,  Physical Resource",
+      "7, 3, 2,  P/E Mix",
+      "1, 3, 2,  P/E Mix"
     })
   @DisplayName("Update line with emtpy locations (createInventory = NONE)")
   void updateLineWithEmptyLocationsMix(int ebsconetQuantity, int currentPQuantity, int currentEQuantity, String orderType) {

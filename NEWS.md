@@ -1,4 +1,18 @@
-## 1.5.0 - Unreleased
+## 2.1.0 - Unreleased
+
+## 2.0.0 - Released (Orchid R1 2023)
+The focus of this release was to update to Java 17 and Spring boot to 3.0.2
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v1.4.0...v2.0.0)
+
+### Stories
+* [MODEBSNET-52](https://issues.folio.org/browse/MODEBSNET-52) Update the module to Spring boot v3.0.0 and identify issues.
+* [MODEBSNET-51](https://issues.folio.org/browse/MODEBSNET-51) Update to Java 17
+* [MODEBSNET-50](https://issues.folio.org/browse/MODEBSNET-50) Logging improvement - Configuration
+* [MODEBSNET-28](https://issues.folio.org/browse/MODEBSNET-28) Logging improvement
+
+### Bug Fixes
+* [MODEBSNET-53](https://issues.folio.org/browse/MODEBSNET-53) Customer test showing InternalServerError
 
 ## 1.4.0 Nolana R3 2022
 The focus of this release was to RMB upgrade and interface version update

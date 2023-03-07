@@ -6,9 +6,7 @@ import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.integration.XOkapiHeaders;
-import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -31,15 +29,6 @@ public class TestBase {
 
   @Autowired
   private FolioModuleMetadata moduleMetadata;
-
-  @BeforeEach
-  void setUp() {
-    FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-      AsyncFolioExecutionContext.builder()
-        .tenantId(TEST_TENANT)
-        .moduleMetadata(moduleMetadata)
-        .okapiUrl(getOkapiUrl()).build());
-  }
 
   public static String getOkapiUrl() {
     return String.format("http://localhost:%s", WIRE_MOCK_PORT);

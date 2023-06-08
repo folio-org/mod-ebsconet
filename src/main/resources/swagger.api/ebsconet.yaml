@@ -138,3 +138,4 @@ components:
     error:
       value:
         $ref: examples/error.sample
+

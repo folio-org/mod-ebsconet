@@ -13,6 +13,11 @@ Backend module for integration with Ebsconet external systems
 
 ## Additional information
 
+### Issue tracker
+
+See project [MODEBSNET](https://issues.folio.org/browse/MODEBSNET)
+at the [FOLIO issue tracker](https://dev.folio.org/guidelines/issue-tracker).
+
 ### Other documentation
 
 Other [modules](https://dev.folio.org/source-code/#server-side) are described,

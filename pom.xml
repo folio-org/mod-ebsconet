@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.2</version>
+    <version>3.1.4</version>
     <relativePath/>
   </parent>
 
@@ -30,8 +30,8 @@
     <openapi-generator.version>6.2.1</openapi-generator.version>
     <ebsconet.yaml.file>${project.basedir}/src/main/resources/swagger.api/ebsconet.yaml</ebsconet.yaml.file>
     <project.parent.version>2.7.0</project.parent.version>
-    <spring-cloud-starter-openfeign.version>4.0.0</spring-cloud-starter-openfeign.version>
-    <springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
+    <spring-cloud-starter-openfeign.version>4.0.4</spring-cloud-starter-openfeign.version>
+    <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
     <jackson-databind-nullable.version>0.2.4</jackson-databind-nullable.version>
     <!-- Plugin properties -->
     <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>

@@ -1,13 +1,11 @@
 ## 2.2.0 - Unreleased
 
 ## 2.1.0 - Released (Poppy R2 2023)
-
 The focus of this release was to update dependencies and remove unnecessary code
 
 [Full Changelog](https://github.com/folio-org/mod-orders/compare/v2.0.0...v2.1.0)
 
 ### Stories
-
 * [MODEBSNET-65](https://issues.folio.org/browse/MODEBSNET-65) spring boot upgrade
 * [MODEBSNET-64](https://issues.folio.org/browse/MODEBSNET-64) Folio Spring base updated
 * [MODEBSNET-62](https://issues.folio.org/browse/MODEBSNET-62) Delete unused Kafka and database references
@@ -16,7 +14,6 @@ The focus of this release was to update dependencies and remove unnecessary code
 * [MODEBSNET-58](https://issues.folio.org/browse/MODEBSNET-58) Delete beginFolioExecutionContext from TestBase
 
 ### Dependencies
-
 * Bump `spring boot` from `3.0.2` to `3.1.4`
 * Bump `folio spring base` from `6.0.0` to `7.2.0`
 

@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -20,6 +21,7 @@ import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
 import org.folio.ebsconet.domain.dto.ReceiptStatus;
 import org.folio.ebsconet.domain.dto.Source;
+import org.folio.ebsconet.domain.dto.VendorDetail;
 import org.folio.ebsconet.error.UnprocessableEntity;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.mapstruct.Mapper;
@@ -84,12 +86,16 @@ public abstract class OrdersMapper {
     poLine.setCancellationRestriction(ebsconetOrderLine.getCancellationRestriction());
     poLine.setCancellationRestrictionNote(ebsconetOrderLine.getCancellationRestrictionNote());
     poLine.getCost().setCurrency(ebsconetOrderLine.getCurrency());
-    poLine.getVendorDetail().setReferenceNumbers(ebsconetOrderLine.getVendorReferenceNumbers());
     poLine.getDetails().setSubscriptionTo(ebsconetOrderLine.getSubscriptionToDate());
     poLine.getDetails().setSubscriptionFrom(ebsconetOrderLine.getSubscriptionFromDate());
-    poLine.getVendorDetail().setVendorAccount(ebsconetOrderLine.getVendorAccountNumber());
     poLine.setPublisher(ebsconetOrderLine.getPublisherName());
     poLine.setRenewalNote(mappingDataHolder.getEbsconetOrderLine().getInternalNote());
+
+    if (Objects.isNull(poLine.getVendorDetail())) {
+      poLine.setVendorDetail(new VendorDetail());
+    }
+    poLine.getVendorDetail().setVendorAccount(ebsconetOrderLine.getVendorAccountNumber());
+    poLine.getVendorDetail().setReferenceNumbers(ebsconetOrderLine.getVendorReferenceNumbers());
 
     populateCostAndLocations(poLine, ebsconetOrderLine);
     removeZeroAmountLocations(poLine);

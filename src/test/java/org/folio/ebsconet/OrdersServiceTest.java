@@ -224,6 +224,42 @@ class OrdersServiceTest {
   }
 
   @Test
+  void shouldCallPutOrderLineWithElectronicWithoutVendorDetail(){
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    var compositePoLine = new CompositePoLine();
+    var fundDistribution = new FundDistribution();
+    fundDistribution.setCode("CODE");
+    compositePoLine.setId(poLine.getId());
+    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
+    compositePoLine.setCost(new Cost());
+    compositePoLine.setDetails(new Details());
+    compositePoLine.setLocations(Collections.singletonList(new Location()));
+    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
+    verify(ordersClient, times(1)).getOrderLineById(anyString());
+    verify(ordersClient, times(1)).putOrderLine(anyString(),any());
+  }
+
+  @Test
   void shouldCallPutIfCallUpdateEbsconetOrderLine(){
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
 

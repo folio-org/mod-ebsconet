@@ -27,7 +27,7 @@ public class OrdersController implements OrdersApi {
   @Override
   public ResponseEntity<Void> putEbsconetOrderLine(String poLineNumber, EbsconetOrderLine ebsconetOrderLine) {
     log.info("Trying to update ebsconet order line: {}, with poLineNumber: {}", ebsconetOrderLine, poLineNumber);
-    if (!ebsconetOrderLine.getPoLineNumber().equals(poLineNumber)) {
+    if (!ebsconetOrderLine.getPoLineNumber().equalsIgnoreCase(poLineNumber)) {
       log.warn("PoLineNumber in path: {} and in body: {} are not equal", poLineNumber, ebsconetOrderLine.getPoLineNumber());
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

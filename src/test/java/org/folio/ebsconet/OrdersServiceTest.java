@@ -187,7 +187,7 @@ class OrdersServiceTest {
   }
 
   @Test
-  void shouldCallPutIfCallUpdateEbsconetOrderLineWithElectronic(){
+  void shouldCallPutIfCallUpdateEbsconetOrderLineWithElectronic() {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
 
     var poLineNumber = "10000-1";
@@ -220,11 +220,47 @@ class OrdersServiceTest {
 
     verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
     verify(ordersClient, times(1)).getOrderLineById(anyString());
-    verify(ordersClient, times(1)).putOrderLine(anyString(),any());
+    verify(ordersClient, times(1)).putOrderLine(anyString(), any());
   }
 
   @Test
-  void shouldCallPutIfCallUpdateEbsconetOrderLine(){
+  void shouldCallPutOrderLineWithElectronicWithoutVendorDetail() {
+    EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine = new PoLine();
+    poLine.setId("id");
+    polResult.addPoLinesItem(poLine);
+    polResult.setTotalRecords(1);
+
+    var compositePoLine = new CompositePoLine();
+    var fundDistribution = new FundDistribution();
+    fundDistribution.setCode("CODE");
+    compositePoLine.setId(poLine.getId());
+    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
+    compositePoLine.setCost(new Cost());
+    compositePoLine.setDetails(new Details());
+    compositePoLine.setLocations(Collections.singletonList(new Location()));
+    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+
+    FundCollection fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
+    verify(ordersClient, times(1)).getOrderLineById(anyString());
+    verify(ordersClient, times(1)).putOrderLine(anyString(), any());
+  }
+
+  @Test
+  void shouldCallPutIfCallUpdateEbsconetOrderLine() {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
 
     var testRenewalNote = "Test renewal Note";
@@ -259,7 +295,7 @@ class OrdersServiceTest {
 
     verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
     verify(ordersClient, times(1)).getOrderLineById(anyString());
-    verify(ordersClient, times(1)).putOrderLine(anyString(),any());
+    verify(ordersClient, times(1)).putOrderLine(anyString(), any());
 
     ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
     verify(ordersClient).putOrderLine(anyString(), argumentCaptor.capture());
@@ -269,7 +305,7 @@ class OrdersServiceTest {
   }
 
   @Test
-  void shouldCallPutIfCallUpdateEbsconetOrderLineWithDifferentFundCode(){
+  void shouldCallPutIfCallUpdateEbsconetOrderLineWithDifferentFundCode() {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("DIFFERENT_CODE", 1);
 
     var poLineNumber = "10000-1";
@@ -306,7 +342,7 @@ class OrdersServiceTest {
 
     verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
     verify(ordersClient, times(1)).getOrderLineById(anyString());
-    verify(ordersClient, times(1)).putOrderLine(anyString(),any());
+    verify(ordersClient, times(1)).putOrderLine(anyString(), any());
     verify(financeClient, times(1)).getFundsByQuery(any());
   }
 
@@ -319,7 +355,7 @@ class OrdersServiceTest {
     when(ordersClient.getOrderLinesByQuery(any())).thenThrow(new FeignException.NotFound("", request, "".getBytes(), request.headers()));
     ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
       () -> ordersService.updateEbscoNetOrderLine(poline));
-    assertThat(resourceNotFoundException.getMessage(),is("PO Line not found: 1"));
+    assertThat(resourceNotFoundException.getMessage(), is("PO Line not found: 1"));
   }
 
   @Test
@@ -333,7 +369,7 @@ class OrdersServiceTest {
 
     ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
       () -> ordersService.updateEbscoNetOrderLine(ebsconetOrderLine));
-    assertThat(resourceNotFoundException.getMessage(),is("PO Line not found: 1"));
+    assertThat(resourceNotFoundException.getMessage(), is("PO Line not found: 1"));
   }
 
   @ParameterizedTest
@@ -346,7 +382,7 @@ class OrdersServiceTest {
   })
   @DisplayName("Update P/E Mix line with new quantity")
   void updatePEMixLineWithNewQuantity(int ebsconetQuantity, int currentPQuantity, int currentEQuantity, int expectedPQuantity,
-    int expectedEQuantity) {
+                                      int expectedEQuantity) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
     CompositePoLine compositePoLine = getSampleCompPoLine();
@@ -375,8 +411,8 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    assertEquals(expectedEQuantity , updatedCompLine.getLocations().get(0).getQuantityElectronic());
-    assertEquals("percentage" , updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
+    assertEquals(expectedEQuantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
+    assertEquals("percentage", updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
     assertEquals(expectedPQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
 
     assertEquals(expectedEQuantity, updatedCompLine.getCost().getQuantityElectronic());
@@ -388,7 +424,7 @@ class OrdersServiceTest {
   @DisplayName("Update P/E Mix line with new price")
   @MethodSource("getPriceParameters")
   void updatePEMixLineWithNewPrice(BigDecimal ebscoPrice, BigDecimal currentPPrice, BigDecimal currentEPrice,
-    BigDecimal expectedPPrice, BigDecimal expectedEPrice) {
+                                   BigDecimal expectedPPrice, BigDecimal expectedEPrice) {
 
     // see https://issues.folio.org/browse/MODEBSNET-10
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 7);
@@ -420,7 +456,7 @@ class OrdersServiceTest {
 
     assertEquals(expectedEPrice.doubleValue(), updatedCompLine.getCost().getListUnitPriceElectronic().doubleValue(), 2);
     assertEquals(expectedPPrice.doubleValue(), updatedCompLine.getCost().getListUnitPrice().doubleValue(), 2);
-    assertEquals("percentage" , updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
+    assertEquals("percentage", updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
   }
 
   @ParameterizedTest
@@ -431,7 +467,7 @@ class OrdersServiceTest {
   })
   @DisplayName("Update line with multiple locations. P/E Mix")
   void updateLineWithMultipleLocationsMix(int ebsconetQuantity,
-    int currentPQuantity, int currentEQuantity, int newLocation1Quantity, int newLocation2Quantity) {
+                                          int currentPQuantity, int currentEQuantity, int newLocation1Quantity, int newLocation2Quantity) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
     CompositePoLine compositePoLine = getSampleCompPoLine();
@@ -777,7 +813,7 @@ class OrdersServiceTest {
 
     verify(ordersClient, times(1)).getOrderLinesByQuery(anyString());
     verify(ordersClient, times(1)).getOrderLineById(anyString());
-    verify(ordersClient, times(1)).putOrderLine(anyString(),any());
+    verify(ordersClient, times(1)).putOrderLine(anyString(), any());
     verify(financeClient, times(1)).getExpenseClassesByQuery(anyString());
   }
 
@@ -844,7 +880,7 @@ class OrdersServiceTest {
 
     Exception exception = assertThrows(UnprocessableEntity.class,
       () -> ordersService.updateEbscoNetOrderLine(ebsconetOrderLine));
-    assertThat(exception.getMessage(),is("Order line was not automatically canceled because it is already complete."));
+    assertThat(exception.getMessage(), is("Order line was not automatically canceled because it is already complete."));
   }
 
   @ParameterizedTest
@@ -877,7 +913,7 @@ class OrdersServiceTest {
 
     Exception exception = assertThrows(UnprocessableEntity.class,
       () -> ordersService.updateEbscoNetOrderLine(ebsconetOrderLine));
-    assertThat(exception.getMessage(),is("Order line was not automatically canceled because it is already canceled."));
+    assertThat(exception.getMessage(), is("Order line was not automatically canceled because it is already canceled."));
   }
 
 

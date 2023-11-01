@@ -1,5 +1,13 @@
 ## 2.2.0 - Unreleased
 
+## 2.1.1 - Released (Poppy R2 2023)
+The focus of this release was to add possibility to work with empty vendorDetails object
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v2.1.0...v2.1.1)
+
+### Bug Fixes
+* [MODEBSNET-66](https://issues.folio.org/browse/MODEBSNET-66) add possibility to work with empty vendorDetails object
+
 ## 2.1.0 - Released (Poppy R2 2023)
 
 The focus of this release was to update dependencies and remove unnecessary code

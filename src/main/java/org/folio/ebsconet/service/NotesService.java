@@ -7,12 +7,15 @@ import org.folio.ebsconet.client.NoteTypeClient;
 import org.folio.ebsconet.client.NotesClient;
 import org.folio.ebsconet.domain.dto.Link;
 import org.folio.ebsconet.domain.dto.Note;
+import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 @RequiredArgsConstructor
@@ -28,33 +31,37 @@ public class NotesService {
     log.info("Creating customer note: {}", note);
     return notesClient.postNote(note);
   }
+
   public void deleteNote(String id) {
     log.info("Deleting customer note by id {}", id);
-     notesClient.deleteNote(id);
+    notesClient.deleteNote(id);
   }
 
   public void linkCustomerNote(MappingDataHolder mappingDataHolder) {
     log.debug("Link customer note to poLine");
-    String generalNoteTypeId = noteTypeClient.getNoteTypesByQuery("name==" + GENERAL_NOTE_TYPE)
-        .get("noteTypes")
-        .get(0)
-        .get("id")
-        .asText();
+    JsonNode generalNote = noteTypeClient.getNoteTypesByQuery("name==" + GENERAL_NOTE_TYPE)
+      .get("noteTypes")
+      .get(0);
+    if (generalNote == null) {
+      throw new ResourceNotFoundException("Note not found with name==" + GENERAL_NOTE_TYPE);
+    }
+    String generalNoteTypeId = generalNote
+      .get("id")
+      .asText();
     var note = this.getNoteByPoLineId(generalNoteTypeId, mappingDataHolder.getCompositePoLine().getId());
     log.info("Note {}, generalNotTypeId: {}", note, generalNoteTypeId);
-    if (mappingDataHolder.getEbsconetOrderLine().getCustomerNote() != null
-      && !mappingDataHolder.getEbsconetOrderLine().getCustomerNote().isEmpty()) {
+    String customerNote = mappingDataHolder.getEbsconetOrderLine().getCustomerNote();
+    if (customerNote != null && !customerNote.isEmpty()) {
       if (note == null) {
         log.warn("Customer note is not found for poLineId: {}", mappingDataHolder.getCompositePoLine().getId());
         note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),
-          mappingDataHolder.getEbsconetOrderLine().getCustomerNote(), generalNoteTypeId);
+          customerNote, generalNoteTypeId);
       } else {
-        note.setContent(mappingDataHolder.getEbsconetOrderLine().getCustomerNote());
+        note.setContent(customerNote);
       }
       log.info("Creating note: {}", note);
       createNote(note);
-    }
-    else if (Objects.nonNull(note)) {
+    } else if (Objects.nonNull(note)) {
       log.warn("Ebsconet order line customer note is empty for poLineId: {}", mappingDataHolder.getCompositePoLine().getId());
       deleteNote(note.getId());
     }

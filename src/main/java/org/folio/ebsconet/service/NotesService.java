@@ -2,6 +2,8 @@ package org.folio.ebsconet.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import org.apache.commons.lang3.StringUtils;
 import org.folio.ebsconet.client.NoteLinksClient;
 import org.folio.ebsconet.client.NoteTypeClient;
 import org.folio.ebsconet.client.NotesClient;
@@ -14,8 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class NotesService {
 
   public void linkCustomerNote(MappingDataHolder mappingDataHolder) {
     log.debug("Link customer note to poLine");
-    JsonNode generalNote = noteTypeClient.getNoteTypesByQuery("name==" + GENERAL_NOTE_TYPE)
+    var generalNote = noteTypeClient.getNoteTypesByQuery("name==" + GENERAL_NOTE_TYPE)
       .get("noteTypes")
       .get(0);
     if (generalNote == null) {
@@ -51,7 +51,7 @@ public class NotesService {
     var note = this.getNoteByPoLineId(generalNoteTypeId, mappingDataHolder.getCompositePoLine().getId());
     log.info("Note {}, generalNotTypeId: {}", note, generalNoteTypeId);
     String customerNote = mappingDataHolder.getEbsconetOrderLine().getCustomerNote();
-    if (customerNote != null && !customerNote.isEmpty()) {
+    if (StringUtils.isNotBlank(customerNote)) {
       if (note == null) {
         log.warn("Customer note is not found for poLineId: {}", mappingDataHolder.getCompositePoLine().getId());
         note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),

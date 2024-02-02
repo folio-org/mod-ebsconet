@@ -11,6 +11,7 @@ import org.folio.ebsconet.domain.dto.Note;
 import org.folio.ebsconet.domain.dto.NoteCollection;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PoLineCollection;
+import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -72,4 +74,18 @@ public class NotesServiceTest {
 
     assertNotNull(note.getTypeId());
   }
+
+  @Test
+  void missingGeneralNote() throws IOException {
+    var holder = new MappingDataHolder();
+    holder.setEbsconetOrderLine(new EbsconetOrderLine());
+    holder.getEbsconetOrderLine().setCustomerNote("TestNote");
+    holder.setCompositePoLine(new CompositePoLine().id(UUID.randomUUID().toString()));
+    JsonNode sampleNoteTypes = new ObjectMapper().readValue("{\"noteTypes\": []}", JsonNode.class);
+
+    when(noteTypeClient.getNoteTypesByQuery(anyString())).thenReturn(sampleNoteTypes);
+
+    assertThrows(ResourceNotFoundException.class, () -> notesService.linkCustomerNote(holder));
+  }
+
 }

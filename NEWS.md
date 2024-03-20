@@ -1,4 +1,16 @@
-## 2.2.0 - Unreleased
+## 2.3.0 - Unreleased
+
+## 2.2.0 - Released (Quesnelia R1 2024)
+The primary focus of this release was error handling improvements and spring version upgrade
+
+[Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v2.1.0...v2.2.0)
+
+### Stories
+* [MODEBSNET-73] (https://folio-org.atlassian.net/browse/MODEBSNET-73) - mod-ebsconet: spring upgrade
+* [MODEBSNET-70] (https://folio-org.atlassian.net/browse/MODEBSNET-70) - Add error code if default note type "General note" is not exists
+
+### Dependencies
+* Bump `spring` from `3.1.4` to `3.2.3`
 
 ## 2.1.0 - Released (Poppy R2 2023)
 The focus of this release was to update dependencies and remove unnecessary code

@@ -24,7 +24,7 @@
     },
     {
       "id": "notes",
-      "version": "2.0 3.0"
+      "version": "4.0"
     }
   ],
   "provides": [
@@ -64,9 +64,8 @@
             "orders.po-lines.item.put",
             "notes.item.post",
             "notes.item.delete",
-            "notes.collection.get.by.status",
-            "note.types.collection.get",
-            "notes.domain.all"
+            "note.links.collection.get",
+            "note.types.collection.get"
           ]
         },
         {

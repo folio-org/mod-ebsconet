@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.3</version>
+    <version>3.3.4</version>
     <relativePath />
   </parent>
 
@@ -27,22 +27,25 @@
 
     <!--Core dependencies-->
     <java.version>17</java.version>
-    <folio-spring-base.version>8.1.0</folio-spring-base.version>
-    <log4j.version>2.23.0</log4j.version>
-    <mapstruct.version>1.5.5.Final</mapstruct.version>
-    <openapi-generator.version>7.3.0</openapi-generator.version>
-    <spring-cloud-starter-openfeign.version>4.1.0</spring-cloud-starter-openfeign.version>
-    <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
-    <jackson-databind-nullable.version>0.2.4</jackson-databind-nullable.version>
+    <folio-spring-base.version>8.2.0</folio-spring-base.version>
+    <log4j.version>2.24.1</log4j.version>
+    <mapstruct.version>1.6.2</mapstruct.version>
+    <openapi-generator.version>7.9.0</openapi-generator.version>
+    <spring-cloud-starter-openfeign.version>4.1.3</spring-cloud-starter-openfeign.version>
+    <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
+    <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+
+    <!--Folio dependencies properties-->
+    <folio-module-descriptor-validator.version>1.0.0</folio-module-descriptor-validator.version>
 
     <!--Maven plugin dependencies-->
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
-    <build-helper-maven-plugin.version>3.5.0</build-helper-maven-plugin.version>
-    <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-    <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+    <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+    <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
+    <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+    <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
+    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -387,6 +390,19 @@
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.folio</groupId>
+        <artifactId>folio-module-descriptor-validator</artifactId>
+        <version>${folio-module-descriptor-validator.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

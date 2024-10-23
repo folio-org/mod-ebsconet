@@ -17,7 +17,7 @@ spring:
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
   jackson:
-    default-property-inclusion: NON_EMPTY
+    default-property-inclusion: non_empty
 
 feign:
   client:

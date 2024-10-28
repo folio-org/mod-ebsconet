@@ -1,5 +1,18 @@
 ## 2.3.0 - Unreleased
 
+## 2.3.0 - Released (Ramson R2 2023)
+The focus of this release was to update dependencies
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v2.2.0...v2.3.0)
+
+### Stories
+* [MODEBSNET-83](https://folio-org.atlassian.net/browse/MODEBSNET-83) - Update libraries of dependant acq modules to the latest versions
+
+### Dependencies
+* Bump `raml` from `35.2.0` to `35.3.0`
+* Added `folio-module-descriptor-validator` version `1.0.0`
+
+
 ## 2.2.0 - Released (Quesnelia R1 2024)
 The primary focus of this release was error handling improvements and spring version upgrade
 

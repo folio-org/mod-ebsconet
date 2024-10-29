@@ -1,6 +1,6 @@
-## 2.3.0 - Unreleased
+## 2.4.0 - Unreleased
 
-## 2.3.0 - Released (Ramson R2 2023)
+## 2.3.0 - Released (Ramsons R2 2023)
 The focus of this release was to update dependencies
 
 [Full Changelog](https://github.com/folio-org/mod-orders/compare/v2.2.0...v2.3.0)

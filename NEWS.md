@@ -1,5 +1,14 @@
 ## 2.4.0 - Unreleased
 
+## 2.3.1 - Released (Ramsons R2 2024 Bug Fix)
+The focus of this release was to update dependencies
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v2.3.0...v2.3.1)
+
+### Stories
+* [MODEBSNET-86](https://folio-org.atlassian.net/browse/MODEBSNET-86) - Spring Boot 3.3.6, tomcat-embed-core 10.1.33
+
+
 ## 2.3.0 - Released (Ramsons R2 2024)
 The focus of this release was to update dependencies
 

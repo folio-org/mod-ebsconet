@@ -30,15 +30,15 @@
     <ebsconet.yaml.file>${project.basedir}/src/main/resources/swagger.api/ebsconet.yaml</ebsconet.yaml.file>
 
     <!--Core dependencies-->
-    <folio-spring-base.version>8.2.2</folio-spring-base.version>
-    <log4j.version>2.24.1</log4j.version>
-    <mapstruct.version>1.6.2</mapstruct.version>
+    <log4j.version>2.24.3</log4j.version>
+    <mapstruct.version>1.6.3</mapstruct.version>
     <openapi-generator.version>7.11.0</openapi-generator.version>
     <spring-cloud-starter-openfeign.version>4.2.0</spring-cloud-starter-openfeign.version>
     <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
     <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
 
     <!--Folio dependencies properties-->
+    <folio-spring-base.version>9.0.0</folio-spring-base.version>
     <folio-module-descriptor-validator.version>1.0.0</folio-module-descriptor-validator.version>
 
     <!--Maven plugin dependencies-->

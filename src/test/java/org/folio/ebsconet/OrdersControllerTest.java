@@ -24,7 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ExtendWith(MockitoExtension.class)
 class OrdersControllerTest extends TestBase {
@@ -34,7 +34,7 @@ class OrdersControllerTest extends TestBase {
   private static final String INVALID_PO_LINE_NUMBER = "13245";
   private String poLineUrl;
 
-  @MockBean
+  @MockitoBean
   private OrdersService ordersService;
 
   @BeforeEach

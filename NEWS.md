@@ -1,4 +1,17 @@
-## 2.4.0 - Unreleased
+## 2.5.0 - Unreleased
+
+## 2.4.0 - Released (Sunflower R1 2025)
+The focus of this release was to update dependencies
+
+[Full Changelog](https://github.com/folio-org/mod-orders/compare/v2.3.0...v2.4.0)
+
+### Stories
+* [FOLIO-4203](https://folio-org.atlassian.net/browse/FOLIO-4203) - Update to mod-ebsconet Java 21
+
+### Dependencies
+* Bump `raml` from `35.3.0` to `35.4.0`
+* Bump `java` from `17` to `21`
+
 
 ## 2.3.0 - Released (Ramsons R2 2024)
 The focus of this release was to update dependencies

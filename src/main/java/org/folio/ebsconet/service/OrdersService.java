@@ -71,9 +71,9 @@ public class OrdersService {
 
     // Convert ebsconet dto to poLine
     ordersMapper.ebsconetToFolio(mappingDataHolder);
-    log.info("Folio order line is mapped from ebsconet order line with  compositePoLine: {}", mappingDataHolder.getCompositePoLine());
+    log.info("Folio order line is mapped from ebsconet order line with poLine: {}", mappingDataHolder.getPoLine());
 
-    ordersClient.putOrderLine(mappingDataHolder.getCompositePoLine().getId(), mappingDataHolder.getCompositePoLine());
+    ordersClient.putOrderLine(mappingDataHolder.getPoLine().getId(), mappingDataHolder.getPoLine());
     notesService.linkCustomerNote(mappingDataHolder);
     // create or update customer note after poLine update
   }
@@ -115,12 +115,12 @@ public class OrdersService {
 
     var poLine = poLines.getPoLines().get(0);
 
-    mappingDataHolder.setCompositePoLine(ordersClient.getOrderLineById(poLine.getId()));
+    mappingDataHolder.setPoLine(ordersClient.getOrderLineById(poLine.getId()));
 
-    if (mappingDataHolder.getCompositePoLine() == null) {
+    if (mappingDataHolder.getPoLine() == null) {
       throw new ResourceNotFoundException(PO_LINE_NOT_FOUND_MESSAGE + poLine.getPoLineNumber());
     }
-    log.info("PoLine is retrieved with id: {}", mappingDataHolder.getCompositePoLine().getId());
+    log.info("PoLine is retrieved with id: {}", mappingDataHolder.getPoLine().getId());
   }
 
   public static String extractFundCode(String fundCode) {

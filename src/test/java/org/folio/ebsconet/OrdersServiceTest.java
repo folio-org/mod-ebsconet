@@ -32,7 +32,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.folio.ebsconet.client.FinanceClient;
 import org.folio.ebsconet.client.OrdersClient;
 import org.folio.ebsconet.client.OrganizationClient;
-import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.Details;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
@@ -192,24 +191,24 @@ class OrdersServiceTest {
 
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
 
-    var compositePoLine = new CompositePoLine();
+    var poLine2 = new PoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
-    compositePoLine.setId(poLine.getId());
-    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
-    compositePoLine.setCost(new Cost());
-    compositePoLine.setVendorDetail(new VendorDetail());
-    compositePoLine.setDetails(new Details());
-    compositePoLine.setLocations(Collections.singletonList(new Location()));
-    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+    poLine2.setId(poLine1.getId());
+    poLine2.setFundDistribution(Collections.singletonList(fundDistribution));
+    poLine2.setCost(new Cost());
+    poLine2.setVendorDetail(new VendorDetail());
+    poLine2.setDetails(new Details());
+    poLine2.setLocations(Collections.singletonList(new Location()));
+    poLine2.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -229,23 +228,23 @@ class OrdersServiceTest {
 
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
 
-    var compositePoLine = new CompositePoLine();
+    var poLine2 = new PoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
-    compositePoLine.setId(poLine.getId());
-    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
-    compositePoLine.setCost(new Cost());
-    compositePoLine.setDetails(new Details());
-    compositePoLine.setLocations(Collections.singletonList(new Location()));
-    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+    poLine2.setId(poLine1.getId());
+    poLine2.setFundDistribution(Collections.singletonList(fundDistribution));
+    poLine2.setCost(new Cost());
+    poLine2.setDetails(new Details());
+    poLine2.setLocations(Collections.singletonList(new Location()));
+    poLine2.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -267,24 +266,24 @@ class OrdersServiceTest {
     ebsconetOrderLine.internalNote(testRenewalNote);
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
 
-    var compositePoLine = new CompositePoLine();
+    var poLine2 = new PoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
-    compositePoLine.setId(poLine.getId());
-    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
-    compositePoLine.setCost(new Cost());
-    compositePoLine.setVendorDetail(new VendorDetail());
-    compositePoLine.setDetails(new Details());
-    compositePoLine.setLocations(Collections.singletonList(new Location()));
-    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+    poLine2.setId(poLine1.getId());
+    poLine2.setFundDistribution(Collections.singletonList(fundDistribution));
+    poLine2.setCost(new Cost());
+    poLine2.setVendorDetail(new VendorDetail());
+    poLine2.setDetails(new Details());
+    poLine2.setLocations(Collections.singletonList(new Location()));
+    poLine2.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -297,9 +296,9 @@ class OrdersServiceTest {
     verify(ordersClient, times(1)).getOrderLineById(anyString());
     verify(ordersClient, times(1)).putOrderLine(anyString(), any());
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(anyString(), argumentCaptor.capture());
-    CompositePoLine updatedLine = argumentCaptor.getValue();
+    PoLine updatedLine = argumentCaptor.getValue();
     assertEquals(testRenewalNote, updatedLine.getRenewalNote());
 
   }
@@ -310,21 +309,21 @@ class OrdersServiceTest {
 
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId(UUID.randomUUID().toString());
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId(UUID.randomUUID().toString());
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
 
-    var compositePoLine = new CompositePoLine();
+    var poLine2 = new PoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
-    compositePoLine.setId(poLine.getId());
-    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
-    compositePoLine.setCost(new Cost());
-    compositePoLine.setVendorDetail(new VendorDetail());
-    compositePoLine.setDetails(new Details());
-    compositePoLine.setLocations(Collections.singletonList(new Location()));
-    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+    poLine2.setId(poLine1.getId());
+    poLine2.setFundDistribution(Collections.singletonList(fundDistribution));
+    poLine2.setCost(new Cost());
+    poLine2.setVendorDetail(new VendorDetail());
+    poLine2.setDetails(new Details());
+    poLine2.setLocations(Collections.singletonList(new Location()));
+    poLine2.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
 
 
     var funds = new FundCollection();
@@ -335,7 +334,7 @@ class OrdersServiceTest {
     funds.setTotalRecords(1);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById(poLine.getId())).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById(poLine1.getId())).thenReturn(poLine2);
     when(financeClient.getFundsByQuery(any())).thenReturn(funds);
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
@@ -385,20 +384,20 @@ class OrdersServiceTest {
                                       int expectedEQuantity) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
-    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
-    compositePoLine.getCost().setQuantityElectronic(currentEQuantity);
-
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
+    poLine2.getCost().setQuantityPhysical(currentPQuantity);
+    poLine2.getCost().setQuantityElectronic(currentEQuantity);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -407,7 +406,7 @@ class OrdersServiceTest {
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -426,23 +425,23 @@ class OrdersServiceTest {
   void updatePEMixLineWithNewPrice(BigDecimal ebscoPrice, BigDecimal currentPPrice, BigDecimal currentEPrice,
                                    BigDecimal expectedPPrice, BigDecimal expectedEPrice) {
 
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
+    polResult.setTotalRecords(1);
+
     // see https://issues.folio.org/browse/MODEBSNET-10
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 7);
     ebsconetOrderLine.setUnitPrice(ebscoPrice);
-    CompositePoLine compositePoLine = getSampleCompPoLine();
-    compositePoLine.getCost().setListUnitPrice(currentPPrice);
-    compositePoLine.getCost().setListUnitPriceElectronic(currentEPrice);
-
-    var poLineNumber = "10000-1";
-    var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
-    polResult.setTotalRecords(1);
+    PoLine poLine2 = getSampleCompPoLine();
+    poLine2.getCost().setListUnitPrice(currentPPrice);
+    poLine2.getCost().setListUnitPriceElectronic(currentEPrice);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
       .totalRecords(1);
@@ -450,7 +449,7 @@ class OrdersServiceTest {
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -470,28 +469,28 @@ class OrdersServiceTest {
                                           int currentPQuantity, int currentEQuantity, int newLocation1Quantity, int newLocation2Quantity) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
+    polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
 
     List<Location> locations = new ArrayList<>();
     locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
     locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityElectronic(currentEQuantity));
-    compositePoLine.setLocations(locations);
+    poLine2.setLocations(locations);
 
-    compositePoLine.setOrderFormat(OrderFormat.P_E_MIX);
+    poLine2.setOrderFormat(OrderFormat.P_E_MIX);
 
-    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
-    compositePoLine.getCost().setQuantityElectronic(currentEQuantity);
-
-    var poLineNumber = "10000-1";
-    var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
-    polResult.setTotalRecords(1);
+    poLine2.getCost().setQuantityPhysical(currentPQuantity);
+    poLine2.getCost().setQuantityElectronic(currentEQuantity);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -499,7 +498,7 @@ class OrdersServiceTest {
     when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -528,31 +527,31 @@ class OrdersServiceTest {
   void updateLineWithEmptyLocationsMix(int ebsconetQuantity, int currentPQuantity, int currentEQuantity, String orderType) {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
-
-    compositePoLine.setLocations(new ArrayList<>());
-
-    compositePoLine.setOrderFormat(OrderFormat.fromValue(orderType));
-
-    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
-    compositePoLine.getCost().setQuantityElectronic(currentEQuantity);
-
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
+
+    poLine2.setLocations(new ArrayList<>());
+
+    poLine2.setOrderFormat(OrderFormat.fromValue(orderType));
+
+    poLine2.getCost().setQuantityPhysical(currentPQuantity);
+    poLine2.getCost().setQuantityElectronic(currentEQuantity);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection().funds(Collections.singletonList(new Fund())).totalRecords(1);
     when(financeClient.getFundsByQuery(anyString())).thenReturn(fundCollection);
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -571,28 +570,28 @@ class OrdersServiceTest {
 
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
+    polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
 
     List<Location> locations = new ArrayList<>();
     locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
     locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
-    compositePoLine.setLocations(locations);
+    poLine2.setLocations(locations);
 
-    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+    poLine2.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
 
-    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
-    compositePoLine.getCost().setQuantityElectronic(0);
-
-    var poLineNumber = "10000-1";
-    var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
-    polResult.setTotalRecords(1);
+    poLine2.getCost().setQuantityPhysical(currentPQuantity);
+    poLine2.getCost().setQuantityElectronic(0);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
       .totalRecords(1);
@@ -600,7 +599,7 @@ class OrdersServiceTest {
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -620,28 +619,28 @@ class OrdersServiceTest {
 
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
+    polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
 
     List<Location> locations = new ArrayList<>();
     locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
     locations.add(new Location().locationId(UUID.randomUUID().toString()).quantityPhysical(currentPQuantity));
-    compositePoLine.setLocations(locations);
+    poLine2.setLocations(locations);
 
-    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+    poLine2.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
 
-    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
-    compositePoLine.getCost().setQuantityElectronic(0);
-
-    var poLineNumber = "10000-1";
-    var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
-    polResult.setTotalRecords(1);
+    poLine2.getCost().setQuantityPhysical(currentPQuantity);
+    poLine2.getCost().setQuantityElectronic(0);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -650,7 +649,7 @@ class OrdersServiceTest {
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -670,7 +669,14 @@ class OrdersServiceTest {
 
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
+    polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
 
     List<Location> locations = new ArrayList<>();
     var location = new Location()
@@ -679,23 +685,16 @@ class OrdersServiceTest {
       .quantityElectronic(0);
 
     locations.add(location);
-    compositePoLine.setLocations(locations);
+    poLine2.setLocations(locations);
 
-    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+    poLine2.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
 
-    compositePoLine.getCost().setQuantityPhysical(currentPQuantity);
-    compositePoLine.getCost().setQuantityElectronic(0);
-
-    var poLineNumber = "10000-1";
-    var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
-    polResult.setTotalRecords(1);
+    poLine2.getCost().setQuantityPhysical(currentPQuantity);
+    poLine2.getCost().setQuantityElectronic(0);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -704,7 +703,7 @@ class OrdersServiceTest {
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -724,7 +723,14 @@ class OrdersServiceTest {
 
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
+    polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
 
     List<Location> locations = new ArrayList<>();
     var location = new Location()
@@ -733,23 +739,16 @@ class OrdersServiceTest {
       .quantityElectronic(currentEQuantity);
 
     locations.add(location);
-    compositePoLine.setLocations(locations);
+    poLine2.setLocations(locations);
 
-    compositePoLine.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
+    poLine2.setOrderFormat(OrderFormat.ELECTRONIC_RESOURCE);
 
-    compositePoLine.getCost().setQuantityPhysical(0);
-    compositePoLine.getCost().setQuantityElectronic(currentEQuantity);
-
-    var poLineNumber = "10000-1";
-    var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
-    polResult.setTotalRecords(1);
+    poLine2.getCost().setQuantityPhysical(0);
+    poLine2.getCost().setQuantityElectronic(currentEQuantity);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
       .totalRecords(1);
@@ -757,7 +756,7 @@ class OrdersServiceTest {
 
     ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
 
-    ArgumentCaptor<CompositePoLine> argumentCaptor = ArgumentCaptor.forClass(CompositePoLine.class);
+    ArgumentCaptor<PoLine> argumentCaptor = ArgumentCaptor.forClass(PoLine.class);
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
@@ -773,22 +772,22 @@ class OrdersServiceTest {
 
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
+    var poLine1 = new PoLine();
 
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
 
-    var compositePoLine = new CompositePoLine();
+    var poLine2 = new PoLine();
     var fundDistribution = new FundDistribution();
     fundDistribution.setCode("CODE");
-    compositePoLine.setId(poLine.getId());
-    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
-    compositePoLine.setCost(new Cost());
-    compositePoLine.setVendorDetail(new VendorDetail());
-    compositePoLine.setDetails(new Details());
-    compositePoLine.setLocations(Collections.singletonList(new Location()));
-    compositePoLine.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
+    poLine2.setId(poLine1.getId());
+    poLine2.setFundDistribution(Collections.singletonList(fundDistribution));
+    poLine2.setCost(new Cost());
+    poLine2.setVendorDetail(new VendorDetail());
+    poLine2.setDetails(new Details());
+    poLine2.setLocations(Collections.singletonList(new Location()));
+    poLine2.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
 
     var funds = new FundCollection();
     var fund = new Fund();
@@ -805,7 +804,7 @@ class OrdersServiceTest {
     expenseClassCollection.setTotalRecords(1);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
     when(financeClient.getFundsByQuery(any())).thenReturn(funds);
     when(financeClient.getExpenseClassesByQuery(anyString())).thenReturn(expenseClassCollection);
 
@@ -829,19 +828,19 @@ class OrdersServiceTest {
 
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
 
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
-    compositePoLine.setId(poLine.getId());
-    compositePoLine.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
-    compositePoLine.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
+    PoLine poLine2 = getSampleCompPoLine();
+    poLine2.setId(poLine1.getId());
+    poLine2.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
+    poLine2.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
 
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -860,18 +859,19 @@ class OrdersServiceTest {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
     ebsconetOrderLine.setType("non-renewal");
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
-    compositePoLine.setPaymentStatus(PaymentStatus.FULLY_PAID);
-    compositePoLine.setReceiptStatus(ReceiptStatus.RECEIPT_NOT_REQUIRED);
-
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
+    poLine2.setPaymentStatus(PaymentStatus.FULLY_PAID);
+    poLine2.setReceiptStatus(ReceiptStatus.RECEIPT_NOT_REQUIRED);
+
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -893,18 +893,19 @@ class OrdersServiceTest {
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
     ebsconetOrderLine.setType("non-renewal");
 
-    CompositePoLine compositePoLine = getSampleCompPoLine();
-    compositePoLine.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
-    compositePoLine.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
-
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId("id");
-    polResult.addPoLinesItem(poLine);
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
     polResult.setTotalRecords(1);
+
+    PoLine poLine2 = getSampleCompPoLine();
+    poLine2.setPaymentStatus(PaymentStatus.fromValue(paymentStatus));
+    poLine2.setReceiptStatus(ReceiptStatus.fromValue(receiptStatus));
+
     when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
-    when(ordersClient.getOrderLineById("id")).thenReturn(compositePoLine);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine2);
 
     FundCollection fundCollection = new FundCollection()
       .funds(Collections.singletonList(new Fund()))
@@ -939,25 +940,25 @@ class OrdersServiceTest {
     return ebsconetOrderLine;
   }
 
-  private CompositePoLine getSampleCompPoLine() {
-    var compositePoLine = new CompositePoLine();
+  private PoLine getSampleCompPoLine() {
+    var poLine = new PoLine();
 
     var cost = new Cost();
     cost.setQuantityPhysical(4);
     cost.setQuantityElectronic(2);
     cost.setListUnitPrice(BigDecimal.valueOf(11));
     cost.setListUnitPriceElectronic(BigDecimal.valueOf(2));
-    compositePoLine.setCost(cost);
+    poLine.setCost(cost);
 
     var fundDistribution = new FundDistribution().code("CODE");
 
-    compositePoLine.setFundDistribution(Collections.singletonList(fundDistribution));
+    poLine.setFundDistribution(Collections.singletonList(fundDistribution));
 
-    compositePoLine.setVendorDetail(new VendorDetail());
-    compositePoLine.setDetails(new Details());
-    compositePoLine.setLocations(Collections.singletonList(new Location()));
-    compositePoLine.setOrderFormat(OrderFormat.P_E_MIX);
-    return compositePoLine;
+    poLine.setVendorDetail(new VendorDetail());
+    poLine.setDetails(new Details());
+    poLine.setLocations(Collections.singletonList(new Location()));
+    poLine.setOrderFormat(OrderFormat.P_E_MIX);
+    return poLine;
   }
 
 }

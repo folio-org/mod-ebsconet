@@ -1,6 +1,6 @@
 package org.folio.ebsconet.client;
 
-import org.folio.ebsconet.domain.dto.CompositePoLine;
+import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PoLineCollection;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -15,11 +15,11 @@ public interface OrdersClient {
   PurchaseOrder getOrderById(@PathVariable("id") String id);
 
   @GetMapping(value = "/order-lines/{id}")
-  CompositePoLine getOrderLineById(@PathVariable("id") String id);
+  PoLine getOrderLineById(@PathVariable("id") String id);
 
   @GetMapping(value = "/order-lines")
   PoLineCollection getOrderLinesByQuery(@RequestParam("query") String query);
 
   @PutMapping(value = "/order-lines/{id}")
-  void putOrderLine(@PathVariable("id") String id, CompositePoLine poLine);
+  void putOrderLine(@PathVariable("id") String id, PoLine poLine);
 }

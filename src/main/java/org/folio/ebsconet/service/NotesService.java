@@ -48,13 +48,13 @@ public class NotesService {
     String generalNoteTypeId = generalNote
       .get("id")
       .asText();
-    var note = this.getNoteByPoLineId(generalNoteTypeId, mappingDataHolder.getCompositePoLine().getId());
+    var note = this.getNoteByPoLineId(generalNoteTypeId, mappingDataHolder.getPoLine().getId());
     log.info("Note {}, generalNotTypeId: {}", note, generalNoteTypeId);
     String customerNote = mappingDataHolder.getEbsconetOrderLine().getCustomerNote();
     if (StringUtils.isNotBlank(customerNote)) {
       if (note == null) {
-        log.warn("Customer note is not found for poLineId: {}", mappingDataHolder.getCompositePoLine().getId());
-        note = buildNewPoLineNote(mappingDataHolder.getCompositePoLine().getId(),
+        log.warn("Customer note is not found for poLineId: {}", mappingDataHolder.getPoLine().getId());
+        note = buildNewPoLineNote(mappingDataHolder.getPoLine().getId(),
           customerNote, generalNoteTypeId);
       } else {
         note.setContent(customerNote);
@@ -62,7 +62,7 @@ public class NotesService {
       log.info("Creating note: {}", note);
       createNote(note);
     } else if (Objects.nonNull(note)) {
-      log.warn("Ebsconet order line customer note is empty for poLineId: {}", mappingDataHolder.getCompositePoLine().getId());
+      log.warn("Ebsconet order line customer note is empty for poLineId: {}", mappingDataHolder.getPoLine().getId());
       deleteNote(note.getId());
     }
 

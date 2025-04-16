@@ -9,7 +9,6 @@ import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.Note;
 import org.folio.ebsconet.domain.dto.NoteCollection;
 import org.folio.ebsconet.domain.dto.PoLine;
-import org.folio.ebsconet.domain.dto.PoLineCollection;
 import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.junit.jupiter.api.Test;

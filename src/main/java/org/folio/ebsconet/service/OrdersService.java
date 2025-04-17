@@ -71,7 +71,7 @@ public class OrdersService {
 
     // Convert ebsconet dto to poLine
     ordersMapper.ebsconetToFolio(mappingDataHolder);
-    log.info("Folio order line is mapped from ebsconet order line with poLine: {}", mappingDataHolder.getPoLine());
+    log.debug("Folio order line is mapped from ebsconet order line with poLine: {}", mappingDataHolder.getPoLine());
 
     ordersClient.putOrderLine(mappingDataHolder.getPoLine().getId(), mappingDataHolder.getPoLine());
     notesService.linkCustomerNote(mappingDataHolder);

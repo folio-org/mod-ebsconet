@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.FundDistribution;
@@ -78,7 +77,7 @@ public abstract class OrdersMapper {
   }
 
   public void ebsconetToFolio(MappingDataHolder mappingDataHolder) {
-    var poLine = mappingDataHolder.getCompositePoLine();
+    var poLine = mappingDataHolder.getPoLine();
     var ebsconetOrderLine = mappingDataHolder.getEbsconetOrderLine();
     var fund = mappingDataHolder.getFund();
 
@@ -116,7 +115,7 @@ public abstract class OrdersMapper {
     }
   }
 
-  private void populateCostAndLocations(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+  private void populateCostAndLocations(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     switch (poLine.getOrderFormat()) {
       case ELECTRONIC_RESOURCE -> populateElectronicCostAndLocation(poLine, ebsconetOrderLine);
       case OTHER, PHYSICAL_RESOURCE -> populatePhysicalCostAndLocation(poLine, ebsconetOrderLine);
@@ -124,7 +123,7 @@ public abstract class OrdersMapper {
     }
   }
 
-  private void populatePhysicalCostAndLocation(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+  private void populatePhysicalCostAndLocation(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     poLine.getCost().setQuantityPhysical(ebsconetOrderLine.getQuantity());
     poLine.getCost().setListUnitPrice(ebsconetOrderLine.getUnitPrice());
 
@@ -137,7 +136,7 @@ public abstract class OrdersMapper {
 
 
 
-  private void populateElectronicCostAndLocation(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+  private void populateElectronicCostAndLocation(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     poLine.getCost().setQuantityElectronic(ebsconetOrderLine.getQuantity());
     poLine.getCost().setListUnitPriceElectronic(ebsconetOrderLine.getUnitPrice());
 
@@ -148,12 +147,12 @@ public abstract class OrdersMapper {
     }
   }
 
-  private void populateCostAndLocationPEMix(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+  private void populateCostAndLocationPEMix(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     processPEmixPriceUpdate(poLine, ebsconetOrderLine);
     processPEMixQuantityUpdate(poLine, ebsconetOrderLine);
   }
 
-  private void processPEMixQuantityUpdate(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+  private void processPEMixQuantityUpdate(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     clearLocationQuantities(poLine);
 
     // special case. 1 ebsconet item for PE mix = 1 physical + 1 electronic folio items
@@ -200,7 +199,7 @@ public abstract class OrdersMapper {
     }
   }
 
-  private void redistributeSinglePeMixItem(CompositePoLine poLine) {
+  private void redistributeSinglePeMixItem(PoLine poLine) {
     poLine.getCost().setQuantityElectronic(1);
     poLine.getCost().setQuantityPhysical(1);
 
@@ -214,7 +213,7 @@ public abstract class OrdersMapper {
       }
   }
 
-  private void processPEmixPriceUpdate(CompositePoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+  private void processPEmixPriceUpdate(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     var fractionDigits = Currency.getInstance(ebsconetOrderLine.getCurrency()).getDefaultFractionDigits();
     var unitPrice = ebsconetOrderLine.getUnitPrice().setScale(fractionDigits, RoundingMode.HALF_EVEN);
 
@@ -240,7 +239,7 @@ public abstract class OrdersMapper {
   }
 
 
-  private void removeZeroAmountLocations(CompositePoLine poLine) {
+  private void removeZeroAmountLocations(PoLine poLine) {
     Predicate<Location> locationQuantityGreaterThanZero = location ->
       location.getQuantityElectronic() != null && location.getQuantityElectronic() > 0
         || location.getQuantityPhysical() != null && location.getQuantityPhysical() > 0;
@@ -254,14 +253,14 @@ public abstract class OrdersMapper {
   }
 
 
-  private void clearLocationQuantities(CompositePoLine poLine) {
+  private void clearLocationQuantities(PoLine poLine) {
     poLine.getLocations().forEach(location -> {
       location.setQuantityPhysical(0);
       location.setQuantityElectronic(0);
     });
   }
 
-  private void cancelOrderLine(CompositePoLine poLine) {
+  private void cancelOrderLine(PoLine poLine) {
     List<PaymentStatus> paymentResolved = List.of(PaymentStatus.PAYMENT_NOT_REQUIRED, PaymentStatus.FULLY_PAID,
       PaymentStatus.CANCELLED);
     List<ReceiptStatus> receiptResolved = List.of(ReceiptStatus.RECEIPT_NOT_REQUIRED, ReceiptStatus.FULLY_RECEIVED,

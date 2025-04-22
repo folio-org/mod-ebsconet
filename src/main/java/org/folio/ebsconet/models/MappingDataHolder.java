@@ -1,21 +1,21 @@
 package org.folio.ebsconet.models;
 
-import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.Fund;
+import org.folio.ebsconet.domain.dto.PoLine;
 
 public class MappingDataHolder {
-  CompositePoLine compositePoLine;
+  PoLine poLine;
   EbsconetOrderLine ebsconetOrderLine;
   Fund fund;
   String expenseClass;
 
-  public CompositePoLine getCompositePoLine() {
-    return compositePoLine;
+  public PoLine getPoLine() {
+    return poLine;
   }
 
-  public void setCompositePoLine(CompositePoLine poLine) {
-    this.compositePoLine = poLine;
+  public void setPoLine(PoLine poLine) {
+    this.poLine = poLine;
   }
 
   public EbsconetOrderLine getEbsconetOrderLine() {

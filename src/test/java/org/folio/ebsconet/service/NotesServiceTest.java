@@ -5,12 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.ebsconet.client.NoteLinksClient;
 import org.folio.ebsconet.client.NoteTypeClient;
 import org.folio.ebsconet.client.NotesClient;
-import org.folio.ebsconet.domain.dto.CompositePoLine;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.Note;
 import org.folio.ebsconet.domain.dto.NoteCollection;
 import org.folio.ebsconet.domain.dto.PoLine;
-import org.folio.ebsconet.domain.dto.PoLineCollection;
 import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.junit.jupiter.api.Test;
@@ -49,19 +47,10 @@ public class NotesServiceTest {
     var holder = new MappingDataHolder();
     holder.setEbsconetOrderLine(new EbsconetOrderLine());
     holder.getEbsconetOrderLine().setCustomerNote("TestNote");
-    holder.setCompositePoLine(new CompositePoLine().id(UUID.randomUUID().toString()));
+    holder.setPoLine(new PoLine().id(UUID.randomUUID().toString()));
     NoteCollection sampleNoteCollection = new ObjectMapper().readValue(new ClassPathResource("/mockdata/notes.json").getFile(), NoteCollection.class);
     Note sampleNote = sampleNoteCollection.getNotes().get(0);
     JsonNode sampleNoteTypes = new ObjectMapper().readValue(new ClassPathResource("/mockdata/note-types.json").getFile(), JsonNode.class);
-
-    var polResult = new PoLineCollection();
-    var poLine = new PoLine();
-    poLine.setId(UUID.randomUUID().toString());
-    polResult.addPoLinesItem(poLine);
-    polResult.setTotalRecords(1);
-
-    var compositePoLine = new CompositePoLine();
-    compositePoLine.setId(poLine.getId());
 
     when(noteTypeClient.getNoteTypesByQuery(anyString())).thenReturn(sampleNoteTypes);
     when(noteLinksClient.getNotesByPoLineId(anyString())).thenReturn(new NoteCollection().notes(new ArrayList<>()));
@@ -80,7 +69,7 @@ public class NotesServiceTest {
     var holder = new MappingDataHolder();
     holder.setEbsconetOrderLine(new EbsconetOrderLine());
     holder.getEbsconetOrderLine().setCustomerNote("TestNote");
-    holder.setCompositePoLine(new CompositePoLine().id(UUID.randomUUID().toString()));
+    holder.setPoLine(new PoLine().id(UUID.randomUUID().toString()));
     JsonNode sampleNoteTypes = new ObjectMapper().readValue("{\"noteTypes\": []}", JsonNode.class);
 
     when(noteTypeClient.getNoteTypesByQuery(anyString())).thenReturn(sampleNoteTypes);

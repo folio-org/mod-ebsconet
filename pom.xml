@@ -30,7 +30,7 @@
     <ebsconet.yaml.file>${project.basedir}/src/main/resources/swagger.api/ebsconet.yaml</ebsconet.yaml.file>
 
     <!--Core dependencies-->
-    <log4j.version>2.25.0</log4j.version>
+    <log4j.version>2.25.1</log4j.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <openapi-generator.version>7.14.0</openapi-generator.version>
     <spring-cloud-starter-openfeign.version>4.3.0</spring-cloud-starter-openfeign.version>

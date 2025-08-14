@@ -123,12 +123,12 @@ public abstract class OrdersMapper {
 
   private boolean isCloseByType(EbsconetOrderLine ebsconetOrderLine) {
     return ObjectUtils.isNotEmpty(ebsconetOrderLine.getType())
-      && ebsconetOrderLine.getType().equalsIgnoreCase("non-renewal");
+      && "non-renewal".equalsIgnoreCase(ebsconetOrderLine.getType());
   }
 
   private boolean isCloseByWorkflowStatus(EbsconetOrderLine ebsconetOrderLine) {
     return ObjectUtils.isNotEmpty(ebsconetOrderLine.getWorkflowStatus())
-      && ebsconetOrderLine.getWorkflowStatus() == WorkflowStatus.CLOSED;
+      && WorkflowStatus.CLOSED == ebsconetOrderLine.getWorkflowStatus();
   }
 
   private void populateCostAndLocations(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {

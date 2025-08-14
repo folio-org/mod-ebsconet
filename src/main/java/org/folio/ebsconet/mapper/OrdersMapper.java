@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.folio.ebsconet.domain.dto.Cost;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.domain.dto.FundDistribution;
@@ -21,6 +22,7 @@ import org.folio.ebsconet.domain.dto.PurchaseOrder;
 import org.folio.ebsconet.domain.dto.ReceiptStatus;
 import org.folio.ebsconet.domain.dto.Source;
 import org.folio.ebsconet.domain.dto.VendorDetail;
+import org.folio.ebsconet.domain.dto.WorkflowStatus;
 import org.folio.ebsconet.error.UnprocessableEntity;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.mapstruct.Mapper;
@@ -57,9 +59,10 @@ public abstract class OrdersMapper {
   @Named("getFundCode")
   public String getFundCode(PoLine line) {
     List<FundDistribution> distributions = line.getFundDistribution();
-    if (distributions == null || distributions.isEmpty())
+    if (distributions == null || distributions.isEmpty()) {
       return null;
-    return distributions.get(0).getCode();
+    }
+    return distributions.getFirst().getCode();
   }
 
   @Named("getQuantity")
@@ -85,8 +88,11 @@ public abstract class OrdersMapper {
     poLine.setCancellationRestriction(ebsconetOrderLine.getCancellationRestriction());
     poLine.setCancellationRestrictionNote(ebsconetOrderLine.getCancellationRestrictionNote());
     poLine.getCost().setCurrency(ebsconetOrderLine.getCurrency());
-    poLine.getDetails().setSubscriptionTo(ebsconetOrderLine.getSubscriptionToDate());
-    poLine.getDetails().setSubscriptionFrom(ebsconetOrderLine.getSubscriptionFromDate());
+
+    if (ObjectUtils.isNotEmpty(poLine.getDetails())) {
+      poLine.getDetails().setSubscriptionTo(ebsconetOrderLine.getSubscriptionToDate());
+      poLine.getDetails().setSubscriptionFrom(ebsconetOrderLine.getSubscriptionFromDate());
+    }
     poLine.setPublisher(ebsconetOrderLine.getPublisherName());
     poLine.setRenewalNote(mappingDataHolder.getEbsconetOrderLine().getInternalNote());
 
@@ -99,8 +105,8 @@ public abstract class OrdersMapper {
     populateCostAndLocations(poLine, ebsconetOrderLine);
     removeZeroAmountLocations(poLine);
 
-    if (ebsconetOrderLine.getType() != null && ebsconetOrderLine.getType().equalsIgnoreCase("non-renewal")) {
-        cancelOrderLine(poLine);
+    if (isCloseByType(ebsconetOrderLine) || isCloseByWorkflowStatus(ebsconetOrderLine)) {
+      cancelOrderLine(poLine);
     }
 
     if (fund != null) {
@@ -113,6 +119,16 @@ public abstract class OrdersMapper {
 
       poLine.fundDistribution(Collections.singletonList(fundDistribution));
     }
+  }
+
+  private boolean isCloseByType(EbsconetOrderLine ebsconetOrderLine) {
+    return ObjectUtils.isNotEmpty(ebsconetOrderLine.getType())
+      && ebsconetOrderLine.getType().equalsIgnoreCase("non-renewal");
+  }
+
+  private boolean isCloseByWorkflowStatus(EbsconetOrderLine ebsconetOrderLine) {
+    return ObjectUtils.isNotEmpty(ebsconetOrderLine.getWorkflowStatus())
+      && ebsconetOrderLine.getWorkflowStatus() == WorkflowStatus.CLOSED;
   }
 
   private void populateCostAndLocations(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
@@ -130,11 +146,9 @@ public abstract class OrdersMapper {
     clearLocationQuantities(poLine);
 
     if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
-      poLine.getLocations().get(0).setQuantityPhysical(ebsconetOrderLine.getQuantity());
+      poLine.getLocations().getFirst().setQuantityPhysical(ebsconetOrderLine.getQuantity());
     }
   }
-
-
 
   private void populateElectronicCostAndLocation(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     poLine.getCost().setQuantityElectronic(ebsconetOrderLine.getQuantity());
@@ -143,12 +157,12 @@ public abstract class OrdersMapper {
     clearLocationQuantities(poLine);
 
     if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
-      poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity());
+      poLine.getLocations().getFirst().setQuantityElectronic(ebsconetOrderLine.getQuantity());
     }
   }
 
   private void populateCostAndLocationPEMix(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
-    processPEmixPriceUpdate(poLine, ebsconetOrderLine);
+    processPEMixPriceUpdate(poLine, ebsconetOrderLine);
     processPEMixQuantityUpdate(poLine, ebsconetOrderLine);
   }
 
@@ -156,45 +170,43 @@ public abstract class OrdersMapper {
     clearLocationQuantities(poLine);
 
     // special case. 1 ebsconet item for PE mix = 1 physical + 1 electronic folio items
-    if (ebsconetOrderLine.getQuantity() == 1) {
+    if (ebsconetOrderLine.getQuantity() != null && ebsconetOrderLine.getQuantity() == 1) {
       redistributeSinglePeMixItem(poLine);
     }
+    else if (poLine.getCost().getQuantityPhysical() != null && poLine.getCost().getQuantityElectronic() != null) {
+      // Q physical = 1 and electronic > 1
+      if (poLine.getCost().getQuantityPhysical() == 1 && poLine.getCost().getQuantityElectronic() > 1) {
+        poLine.getCost().setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
+        poLine.getCost().setQuantityPhysical(1);
 
-    // Q physical = 1 and electronic > 1
-    else if (poLine.getCost().getQuantityPhysical() == 1 && poLine.getCost().getQuantityElectronic() > 1) {
-      poLine.getCost().setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
-      poLine.getCost().setQuantityPhysical(1);
-
-      if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
-        poLine.getLocations().get(0).setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
-        poLine.getLocations().get(0).setQuantityPhysical(1);
+        if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+          poLine.getLocations().getFirst().setQuantityElectronic(ebsconetOrderLine.getQuantity() - 1);
+          poLine.getLocations().getFirst().setQuantityPhysical(1);
+        }
       }
-    }
+      // Q physical > 1, Q electronic = 1
+      else if (poLine.getCost().getQuantityPhysical() > 1 && poLine.getCost().getQuantityElectronic() == 1) {
+        poLine.getCost().setQuantityPhysical(ebsconetOrderLine.getQuantity() - 1);
+        poLine.getCost().setQuantityElectronic(1);
 
-    // Q physical > 1, Q electronic = 1
-    else if (poLine.getCost().getQuantityPhysical() > 1 && poLine.getCost().getQuantityElectronic() == 1) {
-      poLine.getCost().setQuantityPhysical(ebsconetOrderLine.getQuantity() - 1);
-      poLine.getCost().setQuantityElectronic(1);
-
-      if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
-        poLine.getLocations().get(0).setQuantityPhysical(ebsconetOrderLine.getQuantity() - 1);
-        poLine.getLocations().get(0).setQuantityElectronic(1);
+        if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+          poLine.getLocations().getFirst().setQuantityPhysical(ebsconetOrderLine.getQuantity() - 1);
+          poLine.getLocations().getFirst().setQuantityElectronic(1);
+        }
       }
+      // Q (physical > 1 and Q electronic > 1)  OR  (physical = 1 and electronic = 1)
+      else if ((poLine.getCost().getQuantityElectronic() > 1 && poLine.getCost().getQuantityPhysical() > 1)
+        || (poLine.getCost().getQuantityElectronic() == 1 && poLine.getCost().getQuantityPhysical() == 1)) {
+        int newElectronicQuantity = ebsconetOrderLine.getQuantity() / 2;
+        int newPhysicalQuantity = ebsconetOrderLine.getQuantity() - newElectronicQuantity;
 
-    }
+        poLine.getCost().setQuantityElectronic(newElectronicQuantity);
+        poLine.getCost().setQuantityPhysical(newPhysicalQuantity);
 
-    // Q (physical > 1 and Q electronic > 1)  OR  (physical = 1 and electronic = 1)
-    else if ((poLine.getCost().getQuantityElectronic() > 1 && poLine.getCost().getQuantityPhysical() > 1)
-      || (poLine.getCost().getQuantityElectronic() == 1 && poLine.getCost().getQuantityPhysical() == 1)) {
-      int newElectronicQuantity = ebsconetOrderLine.getQuantity() / 2;
-      int newPhysicalQuantity = ebsconetOrderLine.getQuantity() - newElectronicQuantity;
-
-      poLine.getCost().setQuantityElectronic(newElectronicQuantity);
-      poLine.getCost().setQuantityPhysical(newPhysicalQuantity);
-
-      if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
-        poLine.getLocations().get(0).setQuantityElectronic(newElectronicQuantity);
-        poLine.getLocations().get(0).setQuantityPhysical(newPhysicalQuantity);
+        if (CollectionUtils.isNotEmpty(poLine.getLocations())) {
+          poLine.getLocations().getFirst().setQuantityElectronic(newElectronicQuantity);
+          poLine.getLocations().getFirst().setQuantityPhysical(newPhysicalQuantity);
+        }
       }
     }
   }
@@ -205,39 +217,40 @@ public abstract class OrdersMapper {
 
     // redistribute quantities for single and multiple locations. skip when locations empty
     if (poLine.getLocations().size() == 1) {
-      poLine.getLocations().get(0).setQuantityPhysical(1);
-      poLine.getLocations().get(0).setQuantityElectronic(1);
+      poLine.getLocations().getFirst().setQuantityPhysical(1);
+      poLine.getLocations().getFirst().setQuantityElectronic(1);
     } else if (poLine.getLocations().size() > 1) {
-        poLine.getLocations().get(0).setQuantityPhysical(1);
-        poLine.getLocations().get(1).setQuantityElectronic(1);
-      }
+      poLine.getLocations().getFirst().setQuantityPhysical(1);
+      poLine.getLocations().get(1).setQuantityElectronic(1);
+    }
   }
 
-  private void processPEmixPriceUpdate(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
+  private void processPEMixPriceUpdate(PoLine poLine, EbsconetOrderLine ebsconetOrderLine) {
     var fractionDigits = Currency.getInstance(ebsconetOrderLine.getCurrency()).getDefaultFractionDigits();
-    var unitPrice = ebsconetOrderLine.getUnitPrice().setScale(fractionDigits, RoundingMode.HALF_EVEN);
+    var unitPrice = ebsconetOrderLine.getUnitPrice() != null
+      ? ebsconetOrderLine.getUnitPrice().setScale(fractionDigits, RoundingMode.HALF_EVEN)
+      : BigDecimal.ZERO;
 
-    // Price physical = 0 and electronic > 0
-    if (poLine.getCost().getListUnitPrice().signum() == 0 && poLine.getCost().getListUnitPriceElectronic().signum() > 0) {
-      poLine.getCost().setListUnitPriceElectronic(unitPrice);
-    }
+    if (poLine.getCost().getListUnitPrice() != null && poLine.getCost().getListUnitPriceElectronic() != null) {
+      // Price physical = 0 and electronic > 0
+      if (poLine.getCost().getListUnitPrice().signum() == 0 && poLine.getCost().getListUnitPriceElectronic().signum() > 0) {
+        poLine.getCost().setListUnitPriceElectronic(unitPrice);
+      }
+      // Price physical > 0, electronic = 0
+      else if (poLine.getCost().getListUnitPriceElectronic().signum() == 0 && poLine.getCost().getListUnitPrice().signum() > 0) {
+        poLine.getCost().setListUnitPrice(unitPrice);
+      }
+      // Price physical > 0, electronic > 0
+      else if (poLine.getCost().getListUnitPriceElectronic().signum() > 0 && poLine.getCost().getListUnitPrice().signum() > 0) {
+        // divide unit price
+        BigDecimal newElectronicPrice = unitPrice.divide(BigDecimal.valueOf(2), fractionDigits, RoundingMode.HALF_EVEN).setScale(fractionDigits, RoundingMode.HALF_EVEN);
+        BigDecimal newPhysicalPrice = unitPrice.subtract(newElectronicPrice).setScale(fractionDigits, RoundingMode.HALF_EVEN);
 
-    // Price physical > 0, electronic = 0
-    else if (poLine.getCost().getListUnitPriceElectronic().signum() == 0 && poLine.getCost().getListUnitPrice().signum() > 0) {
-      poLine.getCost().setListUnitPrice(unitPrice);
-    }
-    // Price physical > 0, electronic > 0
-    else if (poLine.getCost().getListUnitPriceElectronic().signum() > 0 && poLine.getCost().getListUnitPrice().signum() > 0) {
-      // divide unit price
-
-      BigDecimal newElectronicPrice = unitPrice.divide(BigDecimal.valueOf(2), fractionDigits, RoundingMode.HALF_EVEN).setScale(fractionDigits, RoundingMode.HALF_EVEN);
-      BigDecimal newPhysicalPrice = unitPrice.subtract(newElectronicPrice).setScale(fractionDigits, RoundingMode.HALF_EVEN);
-
-      poLine.getCost().setListUnitPriceElectronic(newElectronicPrice);
-      poLine.getCost().setListUnitPrice(newPhysicalPrice);
+        poLine.getCost().setListUnitPriceElectronic(newElectronicPrice);
+        poLine.getCost().setListUnitPrice(newPhysicalPrice);
+      }
     }
   }
-
 
   private void removeZeroAmountLocations(PoLine poLine) {
     Predicate<Location> locationQuantityGreaterThanZero = location ->
@@ -251,7 +264,6 @@ public abstract class OrdersMapper {
 
     poLine.setLocations(nonZeroLocations);
   }
-
 
   private void clearLocationQuantities(PoLine poLine) {
     poLine.getLocations().forEach(location -> {
@@ -275,9 +287,11 @@ public abstract class OrdersMapper {
         (paymentStatus == PaymentStatus.CANCELLED && receiptResolved.contains(receiptStatus))) {
       throw new UnprocessableEntity(CANNOT_CANCEL_BECAUSE_ALREADY_CANCELED);
     }
-    if (!paymentResolved.contains(paymentStatus))
+    if (!paymentResolved.contains(paymentStatus)) {
       poLine.setPaymentStatus(PaymentStatus.CANCELLED);
-    if (!receiptResolved.contains(receiptStatus))
+    }
+    if (!receiptResolved.contains(receiptStatus)) {
       poLine.setReceiptStatus(ReceiptStatus.CANCELLED);
+    }
   }
 }

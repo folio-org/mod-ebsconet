@@ -10,10 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ebsconet")
-@Log4j2
 public class OrdersController implements OrdersApi {
 
   private final OrdersService ordersService;

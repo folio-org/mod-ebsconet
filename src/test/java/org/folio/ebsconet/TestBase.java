@@ -15,9 +15,9 @@ import org.springframework.test.util.TestSocketUtils;
 
 import static io.restassured.RestAssured.given;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:application-test.yml")
 @Log4j2
+@TestPropertySource("classpath:application-test.yml")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TestBase {
 
   private static Header header;

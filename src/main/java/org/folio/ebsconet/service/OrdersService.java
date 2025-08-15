@@ -18,9 +18,9 @@ import org.folio.ebsconet.models.MappingDataHolder;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
-@Log4j2
 public class OrdersService {
 
   private final NotesService notesService;
@@ -30,7 +30,6 @@ public class OrdersService {
   private final OrganizationClient organizationClient;
   private static final String PO_LINE_NOT_FOUND_MESSAGE = "PO Line not found: ";
   public static final String FUND_CODE_EXPENSE_CLASS_SEPARATOR = ":";
-
 
   public EbsconetOrderLine getEbscoNetOrderLine(String poLineNumber) {
     log.info("Trying to get ebsconet order line with poLineNumber: {}", poLineNumber);
@@ -42,7 +41,7 @@ public class OrdersService {
     }
     if (queryResult.getTotalRecords() < 1)
       throw new ResourceNotFoundException(PO_LINE_NOT_FOUND_MESSAGE + poLineNumber);
-    PoLine line = queryResult.getPoLines().get(0);
+    PoLine line = queryResult.getPoLines().getFirst();
     log.debug("Order line is retrieved for poLineNumber: {}", poLineNumber);
     PurchaseOrder order = ordersClient.getOrderById(line.getPurchaseOrderId());
     log.debug("Order is retrieved with id: {}", poLineNumber);
@@ -51,9 +50,9 @@ public class OrdersService {
     log.debug("Vendor organization is retrieved for poLineNumber: {}", poLineNumber);
 
     String expenseClassCode = "";
-    if (line.getFundDistribution() != null && !line.getFundDistribution().isEmpty() && line.getFundDistribution().get(0).getExpenseClassId() != null) {
-      expenseClassCode = ":" + financeClient.getExpenseClassesById(line.getFundDistribution().get(0).getExpenseClassId()).getCode();
-      line.getFundDistribution().get(0).setCode(line.getFundDistribution().get(0).getCode() + expenseClassCode);
+    if (line.getFundDistribution() != null && !line.getFundDistribution().isEmpty() && line.getFundDistribution().getFirst().getExpenseClassId() != null) {
+      expenseClassCode = ":" + financeClient.getExpenseClassesById(line.getFundDistribution().getFirst().getExpenseClassId()).getCode();
+      line.getFundDistribution().getFirst().setCode(line.getFundDistribution().getFirst().getCode() + expenseClassCode);
     }
     log.debug("Expense class is retrieved with code: {}", expenseClassCode);
     EbsconetOrderLine eol = ordersMapper.folioToEbsconet(order, line, vendor);
@@ -83,11 +82,10 @@ public class OrdersService {
     // Retrieve fund for update if needed
     if (!StringUtils.isEmpty(mappingDataHolder.getEbsconetOrderLine().getFundCode())) {
       FundCollection funds = financeClient.getFundsByQuery("code==" + extractFundCode(updateOrderLine.getFundCode()));
-
       if (funds.getTotalRecords() < 1) {
         throw new ResourceNotFoundException("Fund not found for: " + updateOrderLine.getFundCode());
       }
-      mappingDataHolder.setFund(funds.getFunds().get(0));
+      mappingDataHolder.setFund(funds.getFunds().getFirst());
 
       // Retrieve expense class for update
       var expenseClassCode = extractExpenseClassFromFundCode(updateOrderLine.getFundCode());
@@ -96,7 +94,7 @@ public class OrdersService {
         if (expenseClassCollection.getTotalRecords() < 1) {
           throw new ResourceNotFoundException("Expense Class not found for: " + updateOrderLine.getFundCode());
         }
-        mappingDataHolder.setExpenseClass(expenseClassCollection.getExpenseClasses().get(0).getId());
+        mappingDataHolder.setExpenseClass(expenseClassCollection.getExpenseClasses().getFirst().getId());
       }
     }
   }
@@ -112,8 +110,7 @@ public class OrdersService {
     if (poLines.getTotalRecords() < 1) {
       throw new ResourceNotFoundException(PO_LINE_NOT_FOUND_MESSAGE + updateOrderLine.getPoLineNumber());
     }
-
-    var poLine = poLines.getPoLines().get(0);
+    var poLine = poLines.getPoLines().getFirst();
 
     mappingDataHolder.setPoLine(ordersClient.getOrderLineById(poLine.getId()));
 
@@ -126,6 +123,7 @@ public class OrdersService {
   public static String extractFundCode(String fundCode) {
     return StringUtils.substringBefore(fundCode, FUND_CODE_EXPENSE_CLASS_SEPARATOR);
   }
+
   public static String extractExpenseClassFromFundCode(String fundCode) {
     return StringUtils.substringAfterLast(fundCode, FUND_CODE_EXPENSE_CLASS_SEPARATOR);
   }

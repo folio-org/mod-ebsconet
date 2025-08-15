@@ -32,13 +32,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class NotesServiceTest {
+
   @Mock
   private NoteTypeClient noteTypeClient;
   @Mock
   private NotesClient notesClient;
   @Mock
   private NoteLinksClient noteLinksClient;
-
   @InjectMocks
   private NotesService notesService;
 
@@ -49,7 +49,7 @@ public class NotesServiceTest {
     holder.getEbsconetOrderLine().setCustomerNote("TestNote");
     holder.setPoLine(new PoLine().id(UUID.randomUUID().toString()));
     NoteCollection sampleNoteCollection = new ObjectMapper().readValue(new ClassPathResource("/mockdata/notes.json").getFile(), NoteCollection.class);
-    Note sampleNote = sampleNoteCollection.getNotes().get(0);
+    Note sampleNote = sampleNoteCollection.getNotes().getFirst();
     JsonNode sampleNoteTypes = new ObjectMapper().readValue(new ClassPathResource("/mockdata/note-types.json").getFile(), JsonNode.class);
 
     when(noteTypeClient.getNoteTypesByQuery(anyString())).thenReturn(sampleNoteTypes);

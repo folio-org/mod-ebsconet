@@ -1,4 +1,4 @@
-package org.folio.ebsconet;
+package org.folio.ebsconet.controller;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -17,6 +17,8 @@ import feign.Request.Body;
 import feign.Request.HttpMethod;
 import feign.RequestTemplate;
 import java.util.HashMap;
+
+import org.folio.ebsconet.TestBase;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.service.OrdersService;
@@ -27,7 +29,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ExtendWith(MockitoExtension.class)
-class OrdersControllerTest extends TestBase {
+public class OrdersControllerTest extends TestBase {
+
   private static final String PO_LINE_URL = "http://localhost:%s/ebsconet/orders/order-lines/";
   private static final String PO_LINE_NUMBER = "268758-03";
   private static final String UNKNOWN_PO_LINE_NUMBER = "268758-07";

@@ -1,9 +1,10 @@
-package org.folio.ebsconet;
+package org.folio.ebsconet.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,8 +54,6 @@ import org.folio.ebsconet.domain.dto.VendorDetail;
 import org.folio.ebsconet.domain.dto.WorkflowStatus;
 import org.folio.ebsconet.error.ResourceNotFoundException;
 import org.folio.ebsconet.error.UnprocessableEntity;
-import org.folio.ebsconet.service.NotesService;
-import org.folio.ebsconet.service.OrdersService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,6 +61,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.platform.commons.util.StringUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -76,7 +78,8 @@ import feign.Request.HttpMethod;
 import feign.RequestTemplate;
 
 @ExtendWith(MockitoExtension.class)
-class OrdersServiceTest {
+public class OrdersServiceTest {
+
   @Mock
   private OrdersClient ordersClient;
   @Mock
@@ -89,14 +92,13 @@ class OrdersServiceTest {
   private OrdersService ordersService;
 
   private PoLine preparePoLine(String poLineNumber) throws IOException, URISyntaxException {
-    Path path = Paths.get(getClass().getClassLoader().getResource("mockdata/order_line.json").toURI());
-    Stream<String> lines = Files.lines(path);
-    String data = lines.collect(Collectors.joining("\n"));
-    PoLine pol = new ObjectMapper().readValue(data, PoLine.class);
-
-    pol.setPoLineNumber(poLineNumber);
-    return pol;
-
+    Path path = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("mockdata/order_line.json")).toURI());
+    try (Stream<String> lines = Files.lines(path)) {
+      String data = lines.collect(Collectors.joining("\n"));
+      PoLine pol = new ObjectMapper().readValue(data, PoLine.class);
+      pol.setPoLineNumber(poLineNumber);
+      return pol;
+    }
   }
 
   private Organization prepareOrganization(String vendorId) {
@@ -119,7 +121,7 @@ class OrdersServiceTest {
   void testGetEbsconetOrderLine() throws IOException, URISyntaxException {
     String poLineNumber = "268758-03";
     PoLine pol = preparePoLine(poLineNumber);
-    pol.getFundDistribution().get(0).setExpenseClassId(UUID.randomUUID().toString());
+    pol.getFundDistribution().getFirst().setExpenseClassId(UUID.randomUUID().toString());
     var polResult = new PoLineCollection();
     polResult.addPoLinesItem(pol);
     polResult.setTotalRecords(1);
@@ -300,7 +302,6 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(anyString(), argumentCaptor.capture());
     PoLine updatedLine = argumentCaptor.getValue();
     assertEquals(testRenewalNote, updatedLine.getRenewalNote());
-
   }
 
   @Test
@@ -324,7 +325,6 @@ class OrdersServiceTest {
     poLine2.setDetails(new Details());
     poLine2.setLocations(Collections.singletonList(new Location()));
     poLine2.setOrderFormat(OrderFormat.PHYSICAL_RESOURCE);
-
 
     var funds = new FundCollection();
     var fund = new Fund();
@@ -410,13 +410,12 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    assertEquals(expectedEQuantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
-    assertEquals("percentage", updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
-    assertEquals(expectedPQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
+    assertEquals(expectedEQuantity, updatedCompLine.getLocations().getFirst().getQuantityElectronic());
+    assertEquals("percentage", updatedCompLine.getFundDistribution().getFirst().getDistributionType().getValue());
+    assertEquals(expectedPQuantity, updatedCompLine.getLocations().getFirst().getQuantityPhysical());
 
     assertEquals(expectedEQuantity, updatedCompLine.getCost().getQuantityElectronic());
     assertEquals(expectedPQuantity, updatedCompLine.getCost().getQuantityPhysical());
-
   }
 
   @ParameterizedTest
@@ -424,7 +423,6 @@ class OrdersServiceTest {
   @MethodSource("getPriceParameters")
   void updatePEMixLineWithNewPrice(BigDecimal ebscoPrice, BigDecimal currentPPrice, BigDecimal currentEPrice,
                                    BigDecimal expectedPPrice, BigDecimal expectedEPrice) {
-
     var poLineNumber = "10000-1";
     var polResult = new PoLineCollection();
     var poLine1 = new PoLine();
@@ -453,9 +451,11 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
+    assertNotNull(updatedCompLine.getCost().getListUnitPriceElectronic());
+    assertNotNull(updatedCompLine.getCost().getListUnitPrice());
     assertEquals(expectedEPrice.doubleValue(), updatedCompLine.getCost().getListUnitPriceElectronic().doubleValue(), 2);
     assertEquals(expectedPPrice.doubleValue(), updatedCompLine.getCost().getListUnitPrice().doubleValue(), 2);
-    assertEquals("percentage", updatedCompLine.getFundDistribution().get(0).getDistributionType().getValue());
+    assertEquals("percentage", updatedCompLine.getFundDistribution().getFirst().getDistributionType().getValue());
   }
 
   @ParameterizedTest
@@ -508,9 +508,8 @@ class OrdersServiceTest {
     if (ebsconetQuantity == 1) {
       assertEquals(newLocation2Quantity, updatedCompLine.getLocations().get(1).getQuantityElectronic());
     } else {
-      assertEquals(newLocation2Quantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
+      assertEquals(newLocation2Quantity, updatedCompLine.getLocations().getFirst().getQuantityElectronic());
     }
-
   }
 
   @ParameterizedTest
@@ -556,7 +555,6 @@ class OrdersServiceTest {
     var updatedCompLine = argumentCaptor.getValue();
 
     assertTrue(CollectionUtils.isEmpty(updatedCompLine.getLocations()));
-
   }
 
   @ParameterizedTest
@@ -567,7 +565,6 @@ class OrdersServiceTest {
   })
   @DisplayName("Update line with multiple locations. Physical")
   void updateLineWithMultipleLocationsPhysical(int ebsconetQuantity, int currentPQuantity, int newLocationQuantity) {
-
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
     var poLineNumber = "10000-1";
@@ -603,9 +600,8 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().getFirst().getQuantityPhysical());
     assertEquals(1, updatedCompLine.getLocations().size());
-
   }
 
   @ParameterizedTest
@@ -616,7 +612,6 @@ class OrdersServiceTest {
   })
   @DisplayName("Update line with multiple locations. Electronic")
   void updateLineWithMultipleLocationsElectronic(int ebsconetQuantity, int currentPQuantity, int newLocationQuantity) {
-
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
     var poLineNumber = "10000-1";
@@ -653,10 +648,9 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().getFirst().getQuantityElectronic());
     assertEquals(1, updatedCompLine.getLocations().size());
   }
-
 
   @ParameterizedTest
   @CsvSource({
@@ -707,9 +701,8 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityPhysical());
-    assertEquals(0, updatedCompLine.getLocations().get(0).getQuantityElectronic());
-
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().getFirst().getQuantityPhysical());
+    assertEquals(0, updatedCompLine.getLocations().getFirst().getQuantityElectronic());
   }
 
   @ParameterizedTest
@@ -720,7 +713,6 @@ class OrdersServiceTest {
   })
   @DisplayName("Update line with single location. Electronic")
   void updateLineWithSingleLocationElectronic(int ebsconetQuantity, int currentEQuantity, int newLocationQuantity) {
-
     EbsconetOrderLine ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", ebsconetQuantity);
 
     var poLineNumber = "10000-1";
@@ -760,11 +752,9 @@ class OrdersServiceTest {
     verify(ordersClient).putOrderLine(any(), argumentCaptor.capture());
     var updatedCompLine = argumentCaptor.getValue();
 
-    assertEquals(newLocationQuantity, updatedCompLine.getLocations().get(0).getQuantityElectronic());
-    assertEquals(0, updatedCompLine.getLocations().get(0).getQuantityPhysical());
-
+    assertEquals(newLocationQuantity, updatedCompLine.getLocations().getFirst().getQuantityElectronic());
+    assertEquals(0, updatedCompLine.getLocations().getFirst().getQuantityPhysical());
   }
-
 
   @Test
   void mapFundWithExpenseClass() {
@@ -852,6 +842,43 @@ class OrdersServiceTest {
     verify(ordersClient, times(1)).putOrderLine(anyString(),
       argThat(line -> line.getPaymentStatus() == PaymentStatus.fromValue(resultPaymentStatus) &&
         line.getReceiptStatus() == ReceiptStatus.fromValue(resultReceiptStatus)));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"Pending", "Open", "Closed", ""})
+  void cancelPoLineWithVariableWorkflowStatus(String workflowStatusValue) {
+    var workflowStatus = StringUtils.isNotBlank(workflowStatusValue)
+      ? WorkflowStatus.fromValue(workflowStatusValue) : null;
+
+    var ebsconetOrderLine = getSampleEbsconetOrderLine("CODE", 1);
+    ebsconetOrderLine.setWorkflowStatus(workflowStatus);
+
+    var poLineNumber = "10000-1";
+    var polResult = new PoLineCollection();
+    var poLine1 = new PoLine();
+    poLine1.setId("id");
+    polResult.addPoLinesItem(poLine1);
+    polResult.setTotalRecords(1);
+
+    when(ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber)).thenReturn(polResult);
+
+    var poLine = getSampleCompPoLine();
+    poLine.setId(poLine1.getId());
+    poLine.setPaymentStatus(PaymentStatus.AWAITING_PAYMENT);
+    poLine.setReceiptStatus(ReceiptStatus.AWAITING_RECEIPT);
+    when(ordersClient.getOrderLineById("id")).thenReturn(poLine);
+
+    var fundCollection = new FundCollection()
+      .funds(Collections.singletonList(new Fund()))
+      .totalRecords(1);
+    when(financeClient.getFundsByQuery("code==CODE")).thenReturn(fundCollection);
+
+    ordersService.updateEbscoNetOrderLine(ebsconetOrderLine);
+
+    verify(ordersClient, times(1)).putOrderLine(anyString(),
+      argThat(line -> workflowStatus == WorkflowStatus.CLOSED
+        ? (line.getPaymentStatus() == PaymentStatus.CANCELLED && line.getReceiptStatus() == ReceiptStatus.CANCELLED)
+        : (line.getPaymentStatus() == PaymentStatus.AWAITING_PAYMENT && line.getReceiptStatus() == ReceiptStatus.AWAITING_RECEIPT)));
   }
 
   @Test
@@ -960,5 +987,4 @@ class OrdersServiceTest {
     poLine.setOrderFormat(OrderFormat.P_E_MIX);
     return poLine;
   }
-
 }

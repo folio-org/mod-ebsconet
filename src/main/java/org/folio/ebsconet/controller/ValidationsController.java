@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/ebsconet")
 public class ValidationsController implements ValidateApi {
 
-  private static ValidationResponse getSuccessResponse() {
-    var result = new ValidationResponse();
-    result.setStatus(ValidationResponse.StatusEnum.SUCCESS);
-    return result;
-  }
-
   @Override
   @GetMapping(value = "/validate")
   public ResponseEntity<ValidationResponse> getValidation() {
     return new ResponseEntity<>(getSuccessResponse(), HttpStatus.OK);
+  }
+
+  private static ValidationResponse getSuccessResponse() {
+    var result = new ValidationResponse();
+    result.setStatus(ValidationResponse.StatusEnum.SUCCESS);
+    return result;
   }
 }

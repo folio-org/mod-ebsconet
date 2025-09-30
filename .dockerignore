@@ -1,0 +1,4 @@
+# Only some files are needed for the Docker container
+*
+!target/*.jar
+!run-env.sh

@@ -28,7 +28,6 @@ public class NotesService {
   public static final String EBSCONET_CUSTOMER_NOTE = "EBSCONET Customer Note";
 
   public Note createNote(Note note) {
-    log.info("Creating customer note: {}", note);
     return notesClient.postNote(note);
   }
 
@@ -59,7 +58,6 @@ public class NotesService {
       } else {
         note.setContent(customerNote);
       }
-      log.info("Creating note: {}", note);
       createNote(note);
     } else if (Objects.nonNull(note)) {
       log.warn("Ebsconet order line customer note is empty for poLineId: {}", mappingDataHolder.getPoLine().getId());

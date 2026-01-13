@@ -61,7 +61,7 @@ public class OrdersService {
   }
 
   public void updateEbscoNetOrderLine(EbsconetOrderLine updateOrderLine) {
-    log.debug("Trying to update ebsconet order line: {}", updateOrderLine);
+    log.debug("Trying to update ebsconet order line, poLineNumber: {}", updateOrderLine.getPoLineNumber());
     MappingDataHolder mappingDataHolder = new MappingDataHolder();
     mappingDataHolder.setEbsconetOrderLine(updateOrderLine);
 
@@ -70,15 +70,13 @@ public class OrdersService {
 
     // Convert ebsconet dto to poLine
     ordersMapper.ebsconetToFolio(mappingDataHolder);
-    log.debug("Folio order line is mapped from ebsconet order line with poLine: {}", mappingDataHolder.getPoLine());
-
     ordersClient.putOrderLine(mappingDataHolder.getPoLine().getId(), mappingDataHolder.getPoLine());
     notesService.linkCustomerNote(mappingDataHolder);
     // create or update customer note after poLine update
   }
 
   private void updateHolderWithFinanceData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
-    log.debug("Trying to update data holder with finance data by ebconet order line : {}", updateOrderLine);
+    log.debug("Trying to update data holder with finance data by ebconet order line, poLineNumber: {}", updateOrderLine.getPoLineNumber());
     // Retrieve fund for update if needed
     if (!StringUtils.isEmpty(mappingDataHolder.getEbsconetOrderLine().getFundCode())) {
       FundCollection funds = financeClient.getFundsByQuery("code==" + extractFundCode(updateOrderLine.getFundCode()));
@@ -100,7 +98,7 @@ public class OrdersService {
   }
 
   private void updateHolderWithPoLineData(EbsconetOrderLine updateOrderLine, MappingDataHolder mappingDataHolder) {
-    log.debug("Trying to update data holder with poLine data by ebconet order line: {}", updateOrderLine);
+    log.debug("Trying to update data holder with poLine data by ebconet order line, poLineNumber: {}", updateOrderLine.getPoLineNumber());
     PoLineCollection poLines;
     try {
       poLines = ordersClient.getOrderLinesByQuery("poLineNumber==" + updateOrderLine.getPoLineNumber());

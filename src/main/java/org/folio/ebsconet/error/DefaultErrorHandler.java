@@ -1,8 +1,5 @@
 package org.folio.ebsconet.error;
 
-import feign.FeignException;
-import feign.FeignException.BadRequest;
-import feign.FeignException.InternalServerError;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ebsconet.domain.dto.Error;
 import org.folio.ebsconet.domain.dto.Errors;
@@ -10,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import jakarta.validation.ConstraintViolationException;
 
 import static org.folio.ebsconet.error.ErrorCode.INTERNAL_SERVER_ERROR;
@@ -51,8 +50,8 @@ public class DefaultErrorHandler {
       .body(errors);
   }
 
-  @ExceptionHandler(InternalServerError.class)
-  public ResponseEntity<Errors> handleInternalServerError(final InternalServerError exception) {
+  @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
+  public ResponseEntity<Errors> handleInternalServerError(final HttpServerErrorException.InternalServerError exception) {
     log.error("DefaultErrorHandler:: InternalServerError: {}", exception.getMessage());
     var errors = new Errors();
     errors.addErrorsItem(new Error()
@@ -64,7 +63,7 @@ public class DefaultErrorHandler {
       .body(errors);
   }
 
-  @ExceptionHandler({ UnprocessableEntity.class, FeignException.UnprocessableEntity.class })
+  @ExceptionHandler({ UnprocessableEntity.class, HttpClientErrorException.UnprocessableContent.class })
   public ResponseEntity<Errors> handleUnprocessableEntityError(final Exception exception) {
     log.error("DefaultErrorHandler:: UnprocessableEntity: {}", exception.getMessage());
     var errors = new Errors();
@@ -72,12 +71,12 @@ public class DefaultErrorHandler {
       .message(exception.getMessage())
       .type(INTERNAL.getValue()));
     errors.setTotalRecords(1);
-    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)
       .body(errors);
   }
 
-  @ExceptionHandler(BadRequest.class)
-  public ResponseEntity<Errors> handleBadRequestEntityError(final BadRequest exception) {
+  @ExceptionHandler(HttpClientErrorException.BadRequest.class)
+  public ResponseEntity<Errors> handleBadRequestEntityError(final HttpClientErrorException.BadRequest exception) {
     log.error("DefaultErrorHandler:: BadRequest: " + exception.getMessage());
     var errors = new Errors();
     errors.addErrorsItem(new Error()

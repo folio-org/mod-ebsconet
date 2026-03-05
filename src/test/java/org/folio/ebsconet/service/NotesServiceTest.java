@@ -1,7 +1,7 @@
 package org.folio.ebsconet.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.folio.ebsconet.client.NoteLinksClient;
 import org.folio.ebsconet.client.NoteTypeClient;
 import org.folio.ebsconet.client.NotesClient;

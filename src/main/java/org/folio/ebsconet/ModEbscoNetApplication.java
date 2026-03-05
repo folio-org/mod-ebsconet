@@ -2,10 +2,8 @@ package org.folio.ebsconet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 
-@EnableFeignClients
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class ModEbscoNetApplication {
 

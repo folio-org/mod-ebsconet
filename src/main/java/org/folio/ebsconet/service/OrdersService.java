@@ -1,6 +1,5 @@
 package org.folio.ebsconet.service;
 
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +16,7 @@ import org.folio.ebsconet.mapper.OrdersMapper;
 import org.folio.ebsconet.models.MappingDataHolder;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Log4j2
 @Service
@@ -36,7 +36,7 @@ public class OrdersService {
     PoLineCollection queryResult;
     try {
       queryResult = ordersClient.getOrderLinesByQuery("poLineNumber==" + poLineNumber);
-    } catch (FeignException.NotFound e) {
+    } catch (HttpClientErrorException.NotFound e) {
       throw new ResourceNotFoundException(PO_LINE_NOT_FOUND_MESSAGE + poLineNumber);
     }
     if (queryResult.getTotalRecords() < 1)

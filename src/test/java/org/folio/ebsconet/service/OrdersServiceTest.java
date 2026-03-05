@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -67,15 +66,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openapitools.jackson.nullable.JsonNullable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import feign.FeignException;
-import feign.Request;
-import feign.Request.Body;
-import feign.Request.HttpMethod;
-import feign.RequestTemplate;
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 public class OrdersServiceTest {
@@ -146,7 +141,7 @@ public class OrdersServiceTest {
     verify(organizationClient, times(1)).getOrganizationById(isA(String.class));
 
     assertThat(ebsconetOL.getFundCode(), is("HIST:Prnt"));
-    assertThat(ebsconetOL.getSubscriptionFromDate(), is(JsonNullable.undefined()));
+    assertThat(ebsconetOL.getSubscriptionFromDate(), is(nullValue()));
     // NOTE: a more complete value check is done with the controller test
   }
 
@@ -350,8 +345,9 @@ public class OrdersServiceTest {
     var poline = new EbsconetOrderLine();
     poline.setPoLineNumber("1");
 
-    Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersClient.getOrderLinesByQuery(any())).thenThrow(new FeignException.NotFound("", request, "".getBytes(), request.headers()));
+    when(ordersClient.getOrderLinesByQuery(any()))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "", new HttpHeaders(), new byte[0], null));
+
     ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
       () -> ordersService.updateEbscoNetOrderLine(poline));
     assertThat(resourceNotFoundException.getMessage(), is("PO Line not found: 1"));

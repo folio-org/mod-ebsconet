@@ -65,7 +65,7 @@ public class NotesServiceTest {
   }
 
   @Test
-  void missingGeneralNote() throws IOException {
+  void missingGeneralNote() {
     var holder = new MappingDataHolder();
     holder.setEbsconetOrderLine(new EbsconetOrderLine());
     holder.getEbsconetOrderLine().setCustomerNote("TestNote");

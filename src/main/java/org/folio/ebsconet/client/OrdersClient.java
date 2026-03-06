@@ -4,6 +4,7 @@ import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PoLineCollection;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
@@ -21,5 +22,5 @@ public interface OrdersClient {
   PoLineCollection getOrderLinesByQuery(@RequestParam("query") String query);
 
   @PutExchange(value = "/order-lines/{id}")
-  void putOrderLine(@PathVariable("id") String id, PoLine poLine);
+  void putOrderLine(@PathVariable("id") String id, @RequestBody PoLine poLine);
 }

@@ -4,10 +4,6 @@ server:
 spring:
   application:
     name: mod-ebsconet
-  cloud:
-    openfeign:
-      okhttp:
-        enabled: true
 
   liquibase:
     enabled: false
@@ -19,11 +15,9 @@ spring:
   jackson:
     default-property-inclusion: non_null
 
-feign:
-  client:
-    config:
-      change-manager:
-        logger-level: full
+folio:
+  exchange:
+    enabled: true
 
 management:
   endpoints:

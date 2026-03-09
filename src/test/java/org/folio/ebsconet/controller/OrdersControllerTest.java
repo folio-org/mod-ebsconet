@@ -9,15 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import feign.FeignException.BadRequest;
-import feign.FeignException.InternalServerError;
-import feign.FeignException.UnprocessableEntity;
-import feign.Request;
-import feign.Request.Body;
-import feign.Request.HttpMethod;
-import feign.RequestTemplate;
-import java.util.HashMap;
-
 import org.folio.ebsconet.TestBase;
 import org.folio.ebsconet.domain.dto.EbsconetOrderLine;
 import org.folio.ebsconet.error.ResourceNotFoundException;
@@ -26,7 +17,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 @ExtendWith(MockitoExtension.class)
 public class OrdersControllerTest extends TestBase {
@@ -83,8 +78,8 @@ public class OrdersControllerTest extends TestBase {
   @Test
   void shouldReturnInternalErrorForInternalDateParsingIssue() {
     String urlWithRandomUuid = poLineUrl + PO_LINE_NUMBER;
-    Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new InternalServerError("error", request,"".getBytes(), request.headers()));
+    when(ordersService.getEbscoNetOrderLine(anyString()))
+      .thenThrow(HttpServerErrorException.create(HttpStatus.INTERNAL_SERVER_ERROR, "", new HttpHeaders(), new byte[0], null));
 
     get(urlWithRandomUuid)
       .then()
@@ -95,8 +90,8 @@ public class OrdersControllerTest extends TestBase {
   @Test
   void shouldReturnUnprocessableEntityIfGetSuchResponse() {
     String urlWithRandomUuid = poLineUrl + PO_LINE_NUMBER;
-    Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new UnprocessableEntity("error", request,"".getBytes(), request.headers()));
+    when(ordersService.getEbscoNetOrderLine(anyString()))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.UNPROCESSABLE_CONTENT, "", new HttpHeaders(), new byte[0], null));
 
     get(urlWithRandomUuid)
       .then()
@@ -107,8 +102,8 @@ public class OrdersControllerTest extends TestBase {
   @Test
   void shouldReturnBadRequestIfGetSuchResponse() {
     String urlWithRandomUuid = poLineUrl + PO_LINE_NUMBER;
-    Request request = Request.create(HttpMethod.GET, "", new HashMap<>(), Body.empty(), new RequestTemplate());
-    when(ordersService.getEbscoNetOrderLine(anyString())).thenThrow(new BadRequest("error", request,"".getBytes(), request.headers()));
+    when(ordersService.getEbscoNetOrderLine(anyString()))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "", new HttpHeaders(), new byte[0], null));
 
     get(urlWithRandomUuid)
       .then()

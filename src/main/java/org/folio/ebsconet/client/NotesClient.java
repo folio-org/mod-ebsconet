@@ -1,18 +1,18 @@
 package org.folio.ebsconet.client;
 
 import org.folio.ebsconet.domain.dto.Note;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.DeleteExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 
-@FeignClient("notes")
+@HttpExchange("notes")
 public interface NotesClient {
 
-  @PostMapping
+  @PostExchange
   Note postNote(@RequestBody Note note);
 
-  @DeleteMapping("/{id}")
+  @DeleteExchange("/{id}")
   Note deleteNote(@PathVariable String id);
 }

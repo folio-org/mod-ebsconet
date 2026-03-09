@@ -3,23 +3,24 @@ package org.folio.ebsconet.client;
 import org.folio.ebsconet.domain.dto.PoLine;
 import org.folio.ebsconet.domain.dto.PoLineCollection;
 import org.folio.ebsconet.domain.dto.PurchaseOrder;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PutExchange;
 
-@FeignClient("orders")
+@HttpExchange("orders")
 public interface OrdersClient {
-  @GetMapping(value = "/composite-orders/{id}")
+  @GetExchange(value = "/composite-orders/{id}")
   PurchaseOrder getOrderById(@PathVariable("id") String id);
 
-  @GetMapping(value = "/order-lines/{id}")
+  @GetExchange(value = "/order-lines/{id}")
   PoLine getOrderLineById(@PathVariable("id") String id);
 
-  @GetMapping(value = "/order-lines")
+  @GetExchange(value = "/order-lines")
   PoLineCollection getOrderLinesByQuery(@RequestParam("query") String query);
 
-  @PutMapping(value = "/order-lines/{id}")
-  void putOrderLine(@PathVariable("id") String id, PoLine poLine);
+  @PutExchange(value = "/order-lines/{id}")
+  void putOrderLine(@PathVariable("id") String id, @RequestBody PoLine poLine);
 }

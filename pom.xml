@@ -34,7 +34,7 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <openapi-generator.version>7.20.0</openapi-generator.version>
     <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
-    <jackson-databind-nullable.version>0.2.9</jackson-databind-nullable.version>
+    <jackson.version>3.1.0</jackson.version>
 
     <!--Folio dependencies properties-->
     <folio-spring-base.version>10.0.0-RC1</folio-spring-base.version>
@@ -61,6 +61,14 @@
         <version>${log4j.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>tools.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

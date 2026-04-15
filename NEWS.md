@@ -1,4 +1,24 @@
-## 2.5.0 - Unreleased
+## 2.5.0 - Released (Trillium R2 2025)
+This release focused on upgrading to Spring Boot 4.0 / Spring 7.0, improving container security, and cleaning up sensitive data in logs.
+
+[Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v2.4.0...v2.5.0)
+
+### Stories
+* [MODEBSNET-94](https://folio-org.atlassian.net/browse/MODEBSNET-94) - mod-ebsconet: Use GitHub Workflows for Maven
+* [MODEBSNET-93](https://folio-org.atlassian.net/browse/MODEBSNET-93) - Upgrade module to Spring Boot 4.0 and Spring 7.0
+* [MODEBSNET-91](https://folio-org.atlassian.net/browse/MODEBSNET-91) - Run container as folio, not as root
+* [MODEBSNET-89](https://folio-org.atlassian.net/browse/MODEBSNET-89) - Setup dependabot for the module
+* [MODEBSNET-87](https://folio-org.atlassian.net/browse/MODEBSNET-87) - Sensitive data in logs cleanup
+* [MODEBSNET-77](https://folio-org.atlassian.net/browse/MODEBSNET-77) - Update POL statuses when closing order as cancelled
+
+### Bug Fixes
+* [MODEBSNET-92](https://folio-org.atlassian.net/browse/MODEBSNET-92) - Run container as folio, not as root
+
+### Dependencies
+* Bump `spring-boot` from `3.3.6` to `4.0.x`
+* Bump `spring` to `7.0.x`
+* Multiple dependency updates via Dependabot (prod-deps groups)
+
 
 ## 2.4.0 - Released (Sunflower R1 2025)
 The focus of this release was to update dependencies

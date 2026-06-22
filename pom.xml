@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.0.2</version>
+    <version>4.1.0</version>
     <relativePath />
   </parent>
 
@@ -30,14 +30,14 @@
     <ebsconet.yaml.file>${project.basedir}/src/main/resources/swagger.api/ebsconet.yaml</ebsconet.yaml.file>
 
     <!--Core dependencies-->
-    <log4j.version>2.25.2</log4j.version>
+    <log4j.version>2.26.0</log4j.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <openapi-generator.version>7.20.0</openapi-generator.version>
     <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
-    <jackson.version>3.1.0</jackson.version>
+    <jackson.version>3.2.0</jackson.version>
 
     <!--Folio dependencies properties-->
-    <folio-spring-base.version>10.0.0-RC1</folio-spring-base.version>
+    <folio-spring-base.version>10.0.0</folio-spring-base.version>
     <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
 
     <!--Test dependencies properties-->

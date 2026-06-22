@@ -32,7 +32,7 @@
     <!--Core dependencies-->
     <log4j.version>2.25.2</log4j.version>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <openapi-generator.version>7.20.0</openapi-generator.version>
+    <openapi-generator.version>7.23.0</openapi-generator.version>
     <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
     <jackson.version>3.1.0</jackson.version>
 
@@ -44,13 +44,13 @@
     <rest-assured.version>6.0.0</rest-assured.version>
 
     <!--Maven plugin dependencies-->
-    <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+    <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
-    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
-    <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+    <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+    <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
     <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-    <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
   </properties>
 
   <dependencyManagement>

@@ -1,3 +1,12 @@
+## 2.5.1 - Released (Trillium R2 2026 Bugfix)
+This release focused on upgrading to Spring Boot 4.1 and adding DeployCongig.json
+
+[Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v2.5.0...v2.5.1)
+
+### Stories
+* [MODEBSNET-103](https://folio-org.atlassian.net/browse/MODEBSNET-103) - Upgrade to SpringBoot 4.1
+* [MODEBSNET-100](https://folio-org.atlassian.net/browse/MODEBSNET-100) - Add DeployConfig.json to mod-ebsconet
+
 ## 2.5.0 - Released (Trillium R2 2025)
 This release focused on upgrading to Spring Boot 4.0 / Spring 7.0, improving container security, and cleaning up sensitive data in logs.
 

@@ -59,7 +59,7 @@
       {
         "name": "JAVA_OPTIONS",
         "value": null,
-        "description": "JVM options for the mod-ebsconet process (heap sizing from the java block, GC, agent flags, etc.). This is the variable honoured by the run-java.sh entrypoint of the folioci/alpine-jre-openjdk21 base image; JAVA_OPTS and JAVA_ARGS are not read by it. The module descriptor's Okapi launch configuration sets -XX:MaxRAMPercentage=80.0 here",
+        "description": "JVM options for the mod-ebsconet process (heap sizing from the java block, GC, agent flags, etc.). The module descriptor's Okapi launch configuration sets -XX:MaxRAMPercentage=80.0 here",
         "type": "CONFIG",
         "essential": false
       },

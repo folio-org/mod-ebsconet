@@ -1,3 +1,8 @@
+## WIP
+
+### Stories
+* [MODEBSNET-101](https://folio-org.atlassian.net/browse/MODEBSNET-101) - Upgrade from Java 21 to Java 25
+
 ## 2.5.0 - Released (Trillium R2 2025)
 This release focused on upgrading to Spring Boot 4.0 / Spring 7.0, improving container security, and cleaning up sensitive data in logs.
 

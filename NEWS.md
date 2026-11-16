@@ -1,3 +1,11 @@
+## 2.5.2 - Released (Trillium R2 2026 Bugfix)
+This release focused on updating essential flags in DeployConfig.json
+
+[Full Changelog](https://github.com/folio-org/mod-ebsconet/compare/v2.5.1...v2.5.2)
+
+### Stories
+* [MODEBSNET-100](https://folio-org.atlassian.net/browse/MODEBSNET-100) - Align DeployConfig essential flags and env-specific values with fse-check-deploy-config
+
 ## 2.5.1 - Released (Trillium R2 2026 Bugfix)
 This release focused on upgrading to Spring Boot 4.1 and adding DeployCongig.json
 
